@@ -3,7 +3,7 @@ import numpy as np
 import cv2.aruco as aruco
 
 # Load the image containing the ArUco markers
-image = cv2.imread(r'd:\VisualStudio\Computer Vision Task 1\20221115_113328.jpg')
+image = cv2.imread(r'd:\VisualStudio\Computer Vision Task 1\20221115_113424.jpg')
 # Load the poster image
 poster = cv2.imread(r'd:\VisualStudio\Computer Vision Task 1\poster.jpg')
 
@@ -14,8 +14,7 @@ poster_scale=14 #define the size of the Poster in the final Image (1 is the size
 def show_image(image, Function):
     cv2.namedWindow(Function, cv2.WINDOW_KEEPRATIO)
     cv2.imshow(Function, image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+
 
 poster_height, poster_width = poster.shape[:2]
 
@@ -61,5 +60,11 @@ show_image(mask,"Mask")
 masked_image = cv2.bitwise_and(image, mask)
 show_image(masked_image, "Masked image")
 final_image = cv2.bitwise_or(masked_image, transformed_poster)
+
+outline_thickness = 12  # Adjust as needed
+final_image = cv2.polylines(final_image, [pts], isClosed=True, color=(255, 255, 0), thickness=outline_thickness)
+
 show_image(final_image, "final image")
 cv2.imwrite("finalimage.jpg",final_image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
