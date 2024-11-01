@@ -30,7 +30,7 @@ poster_corners = np.array([
 scaled_width = poster_width / poster_scale
 scaled_height = poster_height / poster_scale
 
-adjusted_poster_corners = np.array([
+scaled_poster_corners = np.array([
     [x - scaled_width, y - scaled_height],  # Top-left
     [x + scaled_width, y - scaled_height],  # Top-right
     [x + scaled_width, y + scaled_height],  # Bottom-right
@@ -42,9 +42,9 @@ aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_6X6_250)
 parameters = aruco.DetectorParameters()
 arucocorners, ids, Error = cv2.aruco.detectMarkers(image, aruco_dict, parameters=parameters)
 
-M = cv2.getPerspectiveTransform(adjusted_poster_corners, arucocorners[0][0])
-final_corners = cv2.perspectiveTransform(poster_corners.reshape(-1, 1, 2), M)
-pts = final_corners.reshape(4, 2).astype(np.int32)
+M = cv2.getPerspectiveTransform(scaled_poster_corners, arucocorners[0][0])
+transformed_poster_corners = cv2.perspectiveTransform(poster_corners.reshape(-1, 1, 2), M)
+pts = transformed_poster_corners.reshape(4, 2).astype(np.int32)
 
 transformed_poster= cv2.warpPerspective(poster, M,(image.shape[1], image.shape[0]))
 show_image(transformed_poster,"Transformed Poster")
