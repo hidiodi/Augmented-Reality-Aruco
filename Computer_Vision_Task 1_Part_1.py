@@ -3,12 +3,13 @@ import numpy as np
 import cv2.aruco as aruco
 
 # Load the image containing the ArUco markers
-image = cv2.imread(r'd:\VisualStudio\Computer Vision Task 1\20221115_113424.jpg')
+image = cv2.imread(r'd:\VisualStudio\Computer Vision Task 1\20221115_113340.jpg')
 # Load the poster image
 poster = cv2.imread(r'd:\VisualStudio\Computer Vision Task 1\poster.jpg')
 
 #define constants 
 poster_scale=14 #define the size of the Poster in the final Image (1 is the size of the marker)
+y_offset = 80
 
 #show the image after each step
 def show_image(image, Function):
@@ -30,10 +31,10 @@ scaled_width = poster_width / poster_scale
 scaled_height = poster_height / poster_scale
 
 scaled_poster_corners = np.array([
-    [x - scaled_width, y - scaled_height],  # Top-left
-    [x + scaled_width, y - scaled_height],  # Top-right
-    [x + scaled_width, y + scaled_height],  # Bottom-right
-    [x - scaled_width, y + scaled_height]   # Bottom-left
+    [x - scaled_width, y - scaled_height + y_offset],  # Top-left
+    [x + scaled_width, y - scaled_height + y_offset],  # Top-right
+    [x + scaled_width, y + scaled_height + y_offset],  # Bottom-right
+    [x - scaled_width, y + scaled_height + y_offset]   # Bottom-left
 ], dtype=np.float32)
 
 # Detect ArUco markers in the image
