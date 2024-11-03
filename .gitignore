@@ -1,2 +1,8 @@
 
 /output
+*.log
+doc/test.pdf
+doc/test.fdb_latexmk
+doc/test.synctex
+doc/test.synctex.gz
+doc/test.fls
