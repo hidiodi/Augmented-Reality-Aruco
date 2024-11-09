@@ -1,25 +1,27 @@
 \documentclass{article}
-\usepackage[utf8]{inputenc}
 \usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{parskip}
 
-\title{Mein erstes LaTeX-Dokument}
-\author{Max Mustermann}
-\date{\today}
+\geometry{margin=1in}
 
 \begin{document}
 
-\maketitle
+\title{Summary of Detection and Augmented Reality Rendering with Aruco Markers}
+\author{Jonas Alber, Schweitzer Tim}
+\date{9.11.2024}
 
-\section{Einleitung}
-Dies ist mein erstes Dokument, das mit LaTeX erstellt wurde. Hier kann ich Text und mathematische Formeln einfügen.
+\maketitle 
 
-\section{Mathematische Formeln}
-Eine einfache Formel ist die Pythagoreische Formel:
-\begin{equation}
-a^2 + b^2 = c^2
-\end{equation}
+\noindent
+This document summarizes the process of using Aruco markers for augmented reality (AR) overlay on an image. The detection and transformation steps are as follows:
 
-\section{Fazit}
-LaTeX ist ein mächtiges Werkzeug zum Schreiben von wissenschaftlichen Arbeiten.
-Die änderung welche ich hier mache sollten auftauchen. Das ist echt nicht schlecht.
+First, Aruco markers are detected within the image using \texttt{cv2.aruco.detectMarkers}. Upon detection, a perspective transformation matrix is computed using \texttt{cv2.getPerspectiveTransform} with the coordinates of the detected marker corners and the dimensions of the intended poster, allowing the poster to be resized and aligned accurately to fit the Aruco-marked area.
+
+To prepare the image for overlay, a mask is created that defines the region intended for the AR content. This mask is inverted to keep all areas outside the AR region visible. Applying this mask to the original image clears space for the overlay. Next, the transformed poster is combined with the masked image using bitwise operations, effectively layering the AR content within the image. Additionally, an optional border can be added around the overlay area to enhance the visual effect.
+
+\paragraph{Challenges} 
+Some difficulties arise when the marker size is considerably smaller than the poster, as this may cause scaling issues that distort the AR effect. Improving the result can be achieved by using multiple markers to better define the overlay area or by implementing pose estimation techniques, which require a calibrated camera for accurate alignment.
+
 \end{document}
