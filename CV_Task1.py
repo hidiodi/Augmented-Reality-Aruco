@@ -11,8 +11,50 @@ script_dir = os.path.dirname(__file__)
 # Der relative Pfad zum Bild im 'img'-Ordner
 image__folder_path = os.path.join(script_dir, 'newImg')
 output_folder_path = os.path.join(script_dir, 'newOutput')
+evaluation_folder_path = os.path.join(script_dir, 'newEvaluation')
 img_list = [datei for datei in os.listdir(image__folder_path) if datei.endswith('.jpg')]
 poster_path = os.path.join(script_dir, 'poster.jpg')
+
+
+### function to find slope 
+def slope(p1,p2):
+    x1,y1=p1
+    x2,y2=p2
+    if x2!=x1:
+        return((y2-y1)/(x2-x1))
+    else:
+        return 'NA'
+
+### main function to draw lines between two points
+def drawLine(image,p1,p2):
+    x1,y1=p1
+    x2,y2=p2
+    ### finding slope
+    m=slope(p1,p2)
+    ### getting image shape
+    h,w=image.shape[:2]
+
+    if m!='NA':
+        ### here we are essentially extending the line to x=0 and x=width
+        ### and calculating the y associated with it
+        ##starting point
+        px=0
+        py=-(x1-0)*m+y1
+        ##ending point
+        qx=w
+        qy=-(x2-w)*m+y2
+    else:
+    ### if slope is zero, draw a line with x=x1 and y=0 and y=height
+        px,py=x1,0
+        qx,qy=x1,h
+    cv2.line(image, (int(px), int(py)), (int(qx), int(qy)), (0, 255, 0), 2)
+    return image
+
+
+    #show the image after each step
+def show_image(image, Function):
+    cv2.namedWindow(Function, cv2.WINDOW_KEEPRATIO)
+    cv2.imshow(Function, image)
 
 for img in img_list:
     try:
@@ -23,14 +65,8 @@ for img in img_list:
         poster = cv2.imread(poster_path)
 
         #define constants 
-        poster_scale=10 #define the size of the Poster in the final Image (1 is the size of the marker)
-        y_offset = 50
-
-        #show the image after each step
-        def show_image(image, Function):
-            cv2.namedWindow(Function, cv2.WINDOW_KEEPRATIO)
-            cv2.imshow(Function, image)
-
+        poster_scale=6 #define the size of the Poster in the final Image (1 is the size of the marker)
+        y_offset = -80
 
         poster_height, poster_width = poster.shape[:2]
 
@@ -77,11 +113,17 @@ for img in img_list:
         #show_image(masked_image, "Masked image")
         final_image = cv2.bitwise_or(masked_image, transformed_poster)
 
-        outline_thickness = 12  # Adjust as needed
-        final_image = cv2.polylines(final_image, [pts], isClosed=True, color=(255, 255, 0), thickness=outline_thickness)
+        cv2.imwrite(os.path.join(output_folder_path,img),final_image)
+
+        
+        # final_image = cv2.polylines(final_image, [pts], isClosed=True, color=(255, 255, 0), thickness=outline_thickness)
+        final_image = drawLine(final_image, pts[0],pts[1])
+        final_image = drawLine(final_image, pts[0],pts[3])
+        final_image = drawLine(final_image, pts[1],pts[2])
+        final_image = drawLine(final_image, pts[2],pts[3])
 
         #show_image(final_image, "final image")
-        cv2.imwrite(os.path.join(output_folder_path,img),final_image)
+        cv2.imwrite(os.path.join(evaluation_folder_path,img),final_image)
         #cv2.waitKey(0)
         #cv2.destroyAllWindows()
     except Exception as e:
