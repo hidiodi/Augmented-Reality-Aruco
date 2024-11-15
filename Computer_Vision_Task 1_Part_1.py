@@ -37,7 +37,7 @@ scaled_poster_corners = np.array([
 ], dtype=np.float32)
 
 # Detect ArUco markers in the image
-aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_6X6_250)
+aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_ARUCO_ORIGINAL)
 parameters = aruco.DetectorParameters()
 
 arucocorners, ids, Error = cv2.aruco.detectMarkers(image, aruco_dict, parameters=parameters)

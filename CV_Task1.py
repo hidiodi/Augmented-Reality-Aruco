@@ -9,8 +9,8 @@ import os
 script_dir = os.path.dirname(__file__)
 
 # Der relative Pfad zum Bild im 'img'-Ordner
-image__folder_path = os.path.join(script_dir, 'img')
-output_folder_path = os.path.join(script_dir, 'output')
+image__folder_path = os.path.join(script_dir, 'newImg')
+output_folder_path = os.path.join(script_dir, 'newOutput')
 img_list = [datei for datei in os.listdir(image__folder_path) if datei.endswith('.jpg')]
 poster_path = os.path.join(script_dir, 'poster.jpg')
 
@@ -23,8 +23,8 @@ for img in img_list:
         poster = cv2.imread(poster_path)
 
         #define constants 
-        poster_scale=14 #define the size of the Poster in the final Image (1 is the size of the marker)
-        y_offset = 80
+        poster_scale=10 #define the size of the Poster in the final Image (1 is the size of the marker)
+        y_offset = 50
 
         #show the image after each step
         def show_image(image, Function):
@@ -53,7 +53,7 @@ for img in img_list:
         ], dtype=np.float32)
 
         # Detect ArUco markers in the image
-        aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_6X6_250)
+        aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_6X6_100)
         parameters = aruco.DetectorParameters()
         arucocorners, ids, Error = cv2.aruco.detectMarkers(image, aruco_dict, parameters=parameters)
 
@@ -62,7 +62,7 @@ for img in img_list:
         pts = transformed_poster_corners.reshape(4, 2).astype(np.int32)
 
         transformed_poster= cv2.warpPerspective(poster, M,(image.shape[1], image.shape[0]))
-        show_image(transformed_poster,"Transformed Poster")
+        #show_image(transformed_poster,"Transformed Poster")
 
         # Create mask with zeros
         mask = np.zeros_like(image)
@@ -70,11 +70,11 @@ for img in img_list:
 
         # Invert mask to keep everything outside the polygon area
         mask = cv2.bitwise_not(mask)
-        show_image(mask,"Mask")
+        #show_image(mask,"Mask")
 
         # Apply mask to image to remove the polygon area
         masked_image = cv2.bitwise_and(image, mask)
-        show_image(masked_image, "Masked image")
+        #show_image(masked_image, "Masked image")
         final_image = cv2.bitwise_or(masked_image, transformed_poster)
 
         outline_thickness = 12  # Adjust as needed
