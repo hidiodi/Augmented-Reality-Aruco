@@ -11,3 +11,5 @@ doc/CV_Task1.pdf
 doc/CV_Task1.fls
 doc/CV_Task1.fdb_latexmk
 doc/CV_Task1.aux
+doc/CV_Task1.out
+*.quarantine
