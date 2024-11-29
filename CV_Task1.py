@@ -11,6 +11,7 @@ script_dir = os.path.dirname(__file__)
 # Der relative Pfad zum Bild im 'img'-Ordner
 image__folder_path = os.path.join(script_dir, 'Img')
 output_folder_path = os.path.join(script_dir, 'Output')
+detectedmarker_folder_path = os.path.join(script_dir, 'detected_marker')
 evaluation_folder_path = os.path.join(script_dir, 'Evaluation')
 img_list = [datei for datei in os.listdir(image__folder_path) if datei.endswith('.jpg')]
 poster_path = os.path.join(script_dir, 'poster.jpg')
@@ -117,6 +118,9 @@ for img in img_list:
         aruco_dict = aruco.getPredefinedDictionary(aruco.DICT_6X6_100)
         parameters = aruco.DetectorParameters()
         arucocorners, ids, Error = cv2.aruco.detectMarkers(image, aruco_dict, parameters=parameters)
+
+        marker_image = aruco.drawDetectedMarkers(image,arucocorners, ids)
+        cv2.imwrite(os.path.join(detectedmarker_folder_path,img),marker_image)
 
         M = cv2.getPerspectiveTransform(scaled_poster_corners, arucocorners[0][0])
         transformed_poster_corners = cv2.perspectiveTransform(poster_corners.reshape(-1, 1, 2), M)
