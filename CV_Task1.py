@@ -123,8 +123,8 @@ for img in img_list:
         final_image = drawLine(final_image, pts[2],pts[3])
 
         #show_image(final_image, "final image")
-        cv2.imwrite(os.path.join(evaluation_folder_path,img),final_image)
-        #cv2.waitKey(0)
-        #cv2.destroyAllWindows()
+        #cv2.imwrite(os.path.join(evaluation_folder_path,img),final_image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
     except Exception as e:
         print(e)
