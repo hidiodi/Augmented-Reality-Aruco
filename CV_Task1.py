@@ -9,12 +9,12 @@ import os
 script_dir = os.path.dirname(__file__)
 
 # Der relative Pfad zum Bild im 'img'-Ordner
-image__folder_path = os.path.join(script_dir, 'Img')
-output_folder_path = os.path.join(script_dir, 'Output')
-detectedmarker_folder_path = os.path.join(script_dir, 'detected_marker')
-evaluation_folder_path = os.path.join(script_dir, 'Evaluation')
+image__folder_path = os.path.join(script_dir, 'newImg')
+output_folder_path = os.path.join(script_dir, 'newOutput')
+detectedmarker_folder_path = os.path.join(script_dir, 'newdetected_marker')
+evaluation_folder_path = os.path.join(script_dir, 'newEvaluation')
 img_list = [datei for datei in os.listdir(image__folder_path) if datei.endswith('.jpg')]
-poster_path = os.path.join(script_dir, 'poster.jpg')
+poster_path = os.path.join(script_dir, 'Fire-800-x-400-4159465357.jpg')
 
 
 ### function to find slope 
@@ -91,8 +91,8 @@ for img in img_list:
         poster = cv2.imread(poster_path)
 
         #define constants 
-        poster_scale=13 #define the size of the Poster in the final Image (1 is the size of the marker)
-        y_offset = 130
+        poster_scale=5 #define the size of the Poster in the final Image (1 is the size of the marker)
+        y_offset = 0
 
         poster_height, poster_width = poster.shape[:2]
 
