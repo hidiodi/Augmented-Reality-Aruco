@@ -37,16 +37,15 @@
 \section*{Disclaimer}
 The content of this document was created by the authors mentioned above. ChatGPT from OpenAI was used to improve readability. However, all content has been checked by the authors and adapted where necessary.
 
-The content of this document was created by the authors mentioned above. ChatGPT from OpenAI was used to improve readability. However, all content has been checked by the authors and adapted where necessary.
 
-\section*{List of abbreviations}
+\section*{Abkürzungsverzeichnis}
 \begin{acronym}[RWU]
     \acro{RWU}{Hochschule Ravensburg Weingarten}
     \acro{AI}{Artificial Intelligence}
     \acro{IoT}{Internet of Things}
 \end{acronym}
 
-\section{Introduction}
+\begin{abstract}
 
 \end{abstract}
 
@@ -56,18 +55,18 @@ The content of this document was created by the authors mentioned above. ChatGPT
 This work was created as part of the Computer Vision course at \ac{RWU} as a project assignment. The aim of the project is to use the OpenCV library to modify images in such a way that a poster is integrated into the image in such a way that the viewer has the impression that the poster is actually in the room.
 \\
 This image augmentation is applied to a given data set, whereby the results achieved are then to be transferred to self-created images.
-
 \subsection{Marker}
-A central challenge in all computer science disciplines that work with image data is the interpretation of spaces on the basis of individual perspectives. One promising approach to recognizing orientation and alignment is the use of markers.
+\todo{Fehlende Quelle!}
+Eine zentrale Herausforderung in allen Disziplinen der Informatik, die mit Bilddaten arbeiten, besteht in der Interpretation von Räumlichkeiten auf Basis einzelner Perspektiven. Ein vielversprechender Ansatz zur Erkennung von Orientierung und Ausrichtung ist die Nutzung von Markern.
 \\
-The ArUco marker is used in this work. These are specially developed markers that consist of a square black and white pattern and enable clear identification and the calculation of position and orientation in space. \cite{aruco1}
+Im Rahmen dieser Arbeit wird der ArUco-Marker eingesetzt. Dabei handelt es sich um speziell entwickelte Marker, die aus einem quadratischen schwarz-weißen Muster bestehen und eine eindeutige Identifizierung sowie die Berechnung von Position und Ausrichtung im Raum ermöglichen. \cite{aruco1}
 
 \section{Image Transformation Process}
 The image transformation process begins by loading the input image \ref{fig:example-base}, which contains ArUco markers, as well as the poster (Figure \ref{fig:img-poster}) image. 
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.9\columnwidth]{img/img_base_113340.jpg} % Beispielbild
-    \caption{Remote name of the Arucumarker from the previous data set.\cite{stefan-elser}}
+    \caption{Fernaufame des Arucumarkers aus dem Vorgegbeenen Datensatz.\cite{stefan-elser}}
     \label{fig:example-base}
 \end{figure}
 \\
@@ -81,9 +80,7 @@ Next, the ArUco markers are detected within the image using OpenCV's aruco.detec
     \label{fig:detected-marker}
 \end{figure}
 \\
-To integrate the transformed poster into the original image, a mask is created, which isolates the transformed poster region. 
-The mask is then inverted so that only the region outside the poster area is kept, ensuring that the poster seamlessly blends with the background.
-Finally, the mask is applied to the image, and the transformed poster is combined with the original image using bitwise operations, resulting in the final image with the poster placed correctly within the marker-defined region.
+To integrate the transformed poster into the original image, a mask is created, which isolates the transformed poster region. The mask is then inverted so that only the region outside the poster area is kept, ensuring that the poster seamlessly blends with the background. Finally, the mask is applied to the image, and the transformed poster is combined with the original image using bitwise operations, resulting in the final image with the poster placed correctly within the marker-defined region.
 
 \section{Evaluation and Validation}
 
@@ -91,7 +88,7 @@ Once the image transformation is complete, the script proceeds to evaluate the a
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.9\columnwidth]{img/img_result_113340.jpg} % Beispielbild
-    \caption{Remote name of the Arucumarker from the previous data set with poster.}
+    \caption{Fernaufame des Arucumarkers aus dem Vorgegbeenen Datensatz mit Poster.}
     \label{fig:example-result}
 \end{figure}
  \\
@@ -99,97 +96,30 @@ Once the image transformation is complete, the script proceeds to evaluate the a
 Following edge detection, the script employs the Hough Line Transform to extract the prominent lines from the edge-detected image. This method identifies and highlights the linear features within the image, including the edges of the poster. By comparing the detected lines with the expected positions of the poster's edges, the script can assess whether the poster has been placed accurately.
 \\
 Finally, the evaluation results are visualized by overlaying the detected lines and edges on the original image. This allows for easy manual inspection of the poster’s placement, providing immediate feedback on the transformation’s accuracy. The combination of edge detection and line extraction ensures that any misalignment or distortion in the poster placement is clearly visible for quality assurance.
+\\
+Bei der Analyse weiterer Bilder zeigt sich jedoch, dass die Erkennung des Aruco-Markers nicht in jeder Perspektive zuverlässig funktioniert. Ein Beispiel hierfür ist in Abbildung \ref{fig:bad-example-result} zu sehen. Beim Vergleich der horizontalen Fluchtpunktlinien des Posters(Grün) mit der Metallstange(Rot) wird sichtbar, dass die Fluchtpunktlinien mit zunehmender Entfernung immer weiter von der Stange abweichen und schließlich abweichen.
+Abgesehen vom Fluchtpunkt sind die Poster in der Platzierung und dem Aspekt ratio konsistent und erlauben ein Stabiles einfügen der Poster.
 \begin{figure}[h!]
     \centering
-    \includegraphics[width=0.9\columnwidth]{img/20221115_113319.jpg} % Beispielbild
-    \caption{Bad Transformation but still good placement the poster is set stable on the marker but the edges dont line up with the background }
-    \label{fig:20221115_113319.jpg}
-    \end{figure}
-    
-    
-    \begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.9\columnwidth]{img/20221115_113328.jpg} % Beispielbild
-    \caption{Decent Transformation but good placement the poster is set stable on the marker, but the edges dont line up with the background, especially in the horizontal}
-    \label{fig:20221115_113328.jpg}
-    \end{figure}
-    
-    \begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.9\columnwidth]{img/20221115_113340.jpg} % Beispielbild
-    \caption{Good Transformation and good placement the poster is set stable on the marker}
-    \label{fig:20221115_113340.jpg}
-    \end{figure}
-    
-    \begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.9\columnwidth]{img/20221115_113346.jpg} % Beispielbild
-    \caption{Detectedcent Transformation and good placement the poster is set stable on the marker, the edges also line up in the vertical but are slightly misaligned in the horizontal }
-    \label{fig:20221115_113346.jpg}
-    \end{figure}
-    
-    \begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.9\columnwidth]{img/20221115_113356.jpg} % Beispielbild
-    \caption{Bad Transformation but decent placement the poster is set stable on the marker, but the edges dont line up with the background, especially in the horizontal}
-    \label{fig:20221115_113356.jpg}
-    \end{figure}
-    
-    \begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.9\columnwidth]{img/20221115_113401.jpg} % Beispielbild
-    \caption{Good Transformation and decent placement the poster is set stable on the marker, but the edges dont line up with the background, especially in the vertical}
-    \label{fig:20221115_113401.jpg}
-    \end{figure}
-    \begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.9\columnwidth]{img/20221115_113412.jpg} % Beispielbild
-    \caption{Decent Transformation and decent placement the poster is set stable on the marker, but the edges dont line up with the background, especially in the horizontal}
-    \label{fig:20221115_113412.jpg}
-    \end{figure}
-    
-    \begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.9\columnwidth]{img/20221115_113424.jpg} % Beispielbild
-    \caption{Good Transformation and good placement the poster is set stable on the marker, the edges dont line up perfectly with the background}
-    \label{fig:20221115_113424.jpg}
-    \end{figure}
-    
-    \begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.9\columnwidth]{img/20221115_113437.jpg} % Beispielbild
-    \caption{Decent Transformation and good placement the poster is set stable on the marker, the edges don't line up perfectly with the background and the part going out the frame doesn't look good}
-    \label{fig:20221115_113437.jpg}
-    \end{figure}
-    
-    
-    
-    \begin{figure}[h!]
-    \centering
-    \includegraphics[width=0.9\columnwidth]{img/20221115_113440.jpg} % Beispielbild
-    \caption{Good Transformation and good placement the poster is set stable on the marker, the edges line up with the background and the part going out the frame does look good}
-    \label{fig:20221115_113440.jpg}
-    \end{figure}
-    
-    \\
-\\
-
-However, when analyzing further images, it becomes apparent that the detection of the Aruco marker does not work reliably in every perspective. An example of this can be seen in Figure \ref{fig:bad-example-result}. When comparing the horizontal vanishing point lines of the poster (green) with the metal rod (red), it can be seen that the vanishing point lines deviate further and further from the rod as the distance increases and finally deviate.
-Apart from the vanishing point, the posters are consistent in terms of placement and aspect ratio and allow the posters to be inserted stably.\begin{figure}[h!]
-    \centering
     \includegraphics[width=0.9\columnwidth]{img/img_result_bad_113437.jpg} % Beispielbild
-    \caption{Example of a perspective in which the vanishing point was poorly recognized.}
+    \caption{Beispiel für eine Perspektive bei welcher der Fluchtpunkt schlecht erkannt wurde.}
     \label{fig:bad-example-result}
 \end{figure}
 
-\section{Conclusion}
+\section{Fazit und Ausblick}
 
-As part of this project, software for placing posters in an image was developed. The Aruco marker and the OpenCV library were mainly used for this.
+Im Rahmen dieses Projekts wurde eine Software zur Platzierung von Postern in einem Bild entwickelt. Dafür wurden hauptsächlich der Aruco-Marker und die Bibliothek OpenCV verwendet.
 \\
-The results of the poster placement are basically solid and position the poster in the correct size in the room. The deviation between the calculated and the actual distortion is so small in the analyzed images that the errors are not disturbing. Errors are much stronger if the Arcuo Marker has a lower resolution and therefore the corners are not recognized accurately.
+Die Ergebnisse der Posterplatzierung sind grundsätzlich solide und positionieren das Poster in der richtigen Größe im Raum. Die Abweichung zwischen der berechneten und der tatsächlichen Verzerrung ist in den analysierten Bildern so geringfügig, dass die Fehler nicht störend wirken. Fehler sind sehr viel stärker, wenn der Arcuo Marker eine geringere Auflösung hat und deswegen die Ecken nicht genau erkannt werden.
 \\
-An improvement of the marker detection was not possible within the scope of this work and could be further optimized in a more extensive scientific study.
+Eine Verbesserung der Marker Erkennung war im Umfang dieser Arbeit nicht möglich und könnte im Rahmen einer umfangreicheren wissenschaftlichen Untersuchung weiter optimiert werden.
 
+%\begin{thebibliography}{99}
+%\bibitem{ref1} Autor, Titel, Quelle, Jahr.
+%\bibitem{ref2} Autor, Titel, Quelle, Jahr.
+%\end{thebibliography}
+
+%\end{document}
 \begin{thebibliography}{9}
 
     \bibitem{aruco1}
@@ -219,8 +149,10 @@ An improvement of the marker detection was not possible within the scope of this
 
 \end{thebibliography}
 
+\todo{Hinzufügen der anderen Bilder}
+
 \appendix
-\section*{Appendix A: Additional Images}
+\section*{Anhang A: Additional Images}
 
 \begin{figure}[h!]
     \centering
@@ -229,7 +161,7 @@ An improvement of the marker detection was not possible within the scope of this
     \label{fig:example-appendix}
 \end{figure}
 
-\section*{Appendix B: Used Poster}
+\section*{Anhang B: Used Poster}
 
 \begin{figure}[h!]
     \centering
