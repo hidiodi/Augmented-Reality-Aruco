@@ -1,11 +1,16 @@
 import cv2
 import numpy as np
 import cv2.aruco as aruco
+import os
 
+script_dir = os.path.dirname(__file__)
 # Load the image containing the ArUco markers
-image = cv2.imread(r'd:\VisualStudio\Computer Vision Task 1\20221115_113319.jpg')
+image__folder_path = os.path.join(script_dir, 'Img')
+
+image = cv2.imread(image__folder_path)
 # Load the poster image
-poster = cv2.imread(r'd:\VisualStudio\Computer Vision Task 1\poster.jpg')
+poster_path = os.path.join(script_dir, 'poster.jpg')
+poster = cv2.imread(poster_path)
 
 #define constants 
 poster_scale=8 #define the size of the Poster in the final Image (1 is the size of the marker)
