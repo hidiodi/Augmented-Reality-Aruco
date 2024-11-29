@@ -74,6 +74,12 @@ The image transformation process begins by loading the input image \ref{fig:exam
 The script then scales and adjusts the poster dimensions to fit within the area defined by the detected ArUco marker, ensuring the poster aligns properly with the marker's size and orientation. To achieve this, the script calculates the corners of the scaled poster and determines their correct positions relative to the marker's location. 
 \\
 Next, the ArUco markers are detected within the image using OpenCV's aruco.detectMarkers function, which identifies the marker's corners. A perspective transformation matrix is calculated based on the positions of the poster corners and the detected marker corners. This matrix is then used to warp the poster image so that it aligns precisely with the detected marker area.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.9\columnwidth]{img/img_result_113340.jpg} % Beispielbild
+    \caption{Detected Marker Image.}
+    \label{fig:example-result}
+\end{figure}
 \\
 To integrate the transformed poster into the original image, a mask is created, which isolates the transformed poster region. The mask is then inverted so that only the region outside the poster area is kept, ensuring that the poster seamlessly blends with the background. Finally, the mask is applied to the image, and the transformed poster is combined with the original image using bitwise operations, resulting in the final image with the poster placed correctly within the marker-defined region.
 
@@ -92,7 +98,9 @@ Following edge detection, the script employs the Hough Line Transform to extract
 \\
 Finally, the evaluation results are visualized by overlaying the detected lines and edges on the original image. This allows for easy manual inspection of the poster’s placement, providing immediate feedback on the transformation’s accuracy. The combination of edge detection and line extraction ensures that any misalignment or distortion in the poster placement is clearly visible for quality assurance.
 \\
-Bei der Analyse weiterer Bilder zeigt sich jedoch, dass die Erkennung des Aruco-Markers nicht in jeder Perspektive zuverlässig funktioniert. Ein Beispiel hierfür ist in Abbildung \ref{fig:bad-example-result} zu sehen. Beim Vergleich der horizontalen Fluchtpunktlinien des Posters(Grün) mit der Metallstange(Rot) wird sichtbar, dass die Fluchtpunktlinien mit zunehmender Entfernung immer weiter von der Stange abweichen und schließlich abweichen.\begin{figure}[h!]
+Bei der Analyse weiterer Bilder zeigt sich jedoch, dass die Erkennung des Aruco-Markers nicht in jeder Perspektive zuverlässig funktioniert. Ein Beispiel hierfür ist in Abbildung \ref{fig:bad-example-result} zu sehen. Beim Vergleich der horizontalen Fluchtpunktlinien des Posters(Grün) mit der Metallstange(Rot) wird sichtbar, dass die Fluchtpunktlinien mit zunehmender Entfernung immer weiter von der Stange abweichen und schließlich abweichen.
+Abgesehen vom Fluchtpunkt sind die Poster in der Platzierung und dem Aspekt ratio konsistent und erlauben ein Stabiles einfügen der Poster.
+\begin{figure}[h!]
     \centering
     \includegraphics[width=0.9\columnwidth]{img/img_result_bad_113437.jpg} % Beispielbild
     \caption{Beispiel für eine Perspektive bei welcher der Fluchtpunkt schlecht erkannt wurde.}
@@ -114,11 +122,25 @@ Eine Verbesserung der Marker Erkennung war im Umfang dieser Arbeit nicht möglic
 
 %\end{document}
 \begin{thebibliography}{9}
-    \bibitem{aruco}
-    \todo{Quelle nochmal prüfen. Prof ist wirklich streng!}
+
+    \bibitem{aruco1}
     S. Garrido-Jurado, R. Muñoz-Salinas, F. J. Madrid-Cuevas, M. J. Marín-Jiménez. 
-    \textit{Automatic generation and detection of highly reliable fiducial markers under occlusion}. Pattern Recognition, vol. 11, no 6, 2021.
+    \textit{Automatic generation and detection of highly reliable fiducial markers under occlusion}. 
+    Pattern Recognition, vol. 11, no. 6, 2021.
+    
+    \bibitem{stackoverflow}
+    \textit{Extract vanishing point from lines with OpenCV}, 
+    StackOverflow user Ilke444. Available: \url{https://stackoverflow.com/questions/57535865/extract-vanishing-point-from-lines-with-open-cv}. 
+    Accessed: Nov. 28, 2024.
+
+    \bibitem{opencv}
+    OpenCV.org, 
+    \textit{Tutorial: ArUco detection}, 
+    Available: \url{https://docs.opencv.org/4.x/d5/dae/tutorial_aruco_detection.html}. 
+    Accessed: Nov. 28, 2024.
+
 \end{thebibliography}
+
 \todo{Hinzufügen der anderen Bilder}
 
 \end{document}
