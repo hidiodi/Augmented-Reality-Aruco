@@ -81,7 +81,7 @@ Next, the ArUco markers are detected within the image using OpenCV's aruco.detec
     \label{fig:example-result}
 \end{figure}
 \\
-To integrate the transformed poster into the original image, a mask is created, which isolates the transformed poster region. The mask is then inverted so that only the region outside the poster area is kept, ensuring that the poster seamlessly blends with the background. Finally, the mask is applied to the image, and the transformed poster is combined with the original image using the bitwise_not operation, resulting in the final image with the poster placed correctly within the marker-defined region.
+To integrate the transformed poster into the original image, a mask is created, which isolates the transformed poster region. The mask is then inverted so that only the region outside the poster area is kept, ensuring that the poster seamlessly blends with the background. Finally, the mask is applied to the image, and the transformed poster is combined with the original image using bitwise operations, resulting in the final image with the poster placed correctly within the marker-defined region.
 
 \section{Evaluation and Validation}
 
@@ -97,9 +97,82 @@ Once the image transformation is complete, the script proceeds to evaluate the a
 Following edge detection, the script employs the Hough Line Transform to extract the prominent lines from the edge-detected image. This method identifies and highlights the linear features within the image, including the edges of the poster. By comparing the detected lines with the expected positions of the poster's edges, the script can assess whether the poster has been placed accurately.
 \\
 Finally, the evaluation results are visualized by overlaying the detected lines and edges on the original image. This allows for easy manual inspection of the poster’s placement, providing immediate feedback on the transformation’s accuracy. The combination of edge detection and line extraction ensures that any misalignment or distortion in the poster placement is clearly visible for quality assurance.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\columnwidth]{img/20221115_113319.jpg} % Beispielbild
+\caption{Bad Transformation but still good placement the poster is set stable on the marker but the edges dont line up with the background }
+\label{fig:20221115_113319.jpg}
+\end{figure}
+
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\columnwidth]{img/20221115_113328.jpg} % Beispielbild
+\caption{decent Transformation but good placement the poster is set stable on the marker, but the edges dont line up with the background, especially in the horizontal}
+\label{fig:20221115_113328.jpg}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\columnwidth]{img/20221115_113340.jpg} % Beispielbild
+\caption{good Transformation and good placement the poster is set stable on the marker}
+\label{fig:20221115_113340.jpg}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\columnwidth]{img/20221115_113346.jpg} % Beispielbild
+\caption{decent Transformation and good placement the poster is set stable on the marker, the edges also line up in the vertical but are slightly misaligned in the horizontal }
+\label{fig:20221115_113346.jpg}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\columnwidth]{img/20221115_113356.jpg} % Beispielbild
+\caption{bad Transformation but decent placement the poster is set stable on the marker, but the edges dont line up with the background, especially in the horizontal}
+\label{fig:20221115_113356.jpg}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\columnwidth]{img/20221115_113401.jpg} % Beispielbild
+\caption{good Transformation and decent placement the poster is set stable on the marker, but the edges dont line up with the background, especially in the vertical}
+\label{fig:20221115_113401.jpg}
+\end{figure}
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\columnwidth]{img/20221115_113412.jpg} % Beispielbild
+\caption{decent Transformation and decent placement the poster is set stable on the marker, but the edges dont line up with the background, especially in the horizontal}
+\label{fig:20221115_113412.jpg}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\columnwidth]{img/20221115_113424.jpg} % Beispielbild
+\caption{good Transformation and good placement the poster is set stable on the marker, the edges dont line up perfectly with the background}
+\label{fig:20221115_113424.jpg}
+\end{figure}
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\columnwidth]{img/20221115_113437.jpg} % Beispielbild
+\caption{decent Transformation and good placement the poster is set stable on the marker, the edges don't line up perfectly with the background and the part going out the frame doesn't look good}
+\label{fig:20221115_113437.jpg}
+\end{figure}
+
+
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.9\columnwidth]{img/20221115_113440.jpg} % Beispielbild
+\caption{good Transformation and good placement the poster is set stable on the marker, the edges line up with the background and the part going out the frame does look good}
+\label{fig:20221115_113440.jpg}
+\end{figure}
+
 \\
-Bei der Analyse weiterer Bilder zeigt sich jedoch, dass die Erkennung des Aruco-Markers nicht in jeder Perspektive zuverlässig funktioniert. Ein Beispiel hierfür ist in Abbildung \ref{fig:bad-example-result} zu sehen. Beim Vergleich der horizontalen Fluchtpunktlinien des Posters(Grün) mit der Metallstange(Rot) wird sichtbar, dass die Fluchtpunktlinien mit zunehmender Entfernung immer weiter von der Stange abweichen und schließlich abweichen.
-Abgesehen vom Fluchtpunkt sind die Poster in der Platzierung und dem Aspekt ratio konsistent und erlauben ein Stabiles einfügen der Poster.
+Bei der Analyse der Bilder zeigt sich jedoch, dass die Erkennung des Aruco-Markers nicht in jeder Perspektive zuverlässig funktioniert. Beim Vergleich der horizontalen Fluchtpunktlinien des Posters(Grün) mit der Metallstange(Rot) wird sichtbar, dass die Fluchtpunktlinien mit zunehmender Entfernung immer weiter von der Stange abweichen und schließlich abweichen.
+Abgesehen vom Fluchtpunkt sind die Poster in der Platzierung und dem Aspekt ratio konsistent und erlauben ein Stabiles einfügen der Poster. Die Teilweise verzerrten Poster lassen sich auch auf die Auflösung der Bilder, speziell des Aruco-Markers zurückführen.
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.9\columnwidth]{img/img_result_bad_113437.jpg} % Beispielbild
