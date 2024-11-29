@@ -13,8 +13,8 @@ image__folder_path = os.path.join(script_dir, 'newImg')
 output_folder_path = os.path.join(script_dir, 'newOutput')
 detectedmarker_folder_path = os.path.join(script_dir, 'newdetected_marker')
 evaluation_folder_path = os.path.join(script_dir, 'newEvaluation')
-img_list = [datei for datei in os.listdir(image__folder_path) if datei.endswith('.jpg')]
-poster_path = os.path.join(script_dir, 'Fire-800-x-400-4159465357.jpg')
+img_list = [datei for datei in os.listdir(image__folder_path) if datei.endswith('.jpeg')]
+poster_path = os.path.join(script_dir, 'solar-flare-978_960_720.jpg')
 
 
 ### function to find slope 
@@ -81,9 +81,11 @@ def detect_edges(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     edges = cv2.Canny(gray, 100, 200)
     return edges
-
+print("test")
 for img in img_list:
+    print("test")
     try:
+        #print("test")
         image_path = os.path.join(image__folder_path,img)
         # Load the image containing the ArUco markers
         image = cv2.imread(image_path)
