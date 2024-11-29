@@ -81,7 +81,7 @@ Next, the ArUco markers are detected within the image using OpenCV's aruco.detec
     \label{fig:example-result}
 \end{figure}
 \\
-To integrate the transformed poster into the original image, a mask is created, which isolates the transformed poster region. The mask is then inverted so that only the region outside the poster area is kept, ensuring that the poster seamlessly blends with the background. Finally, the mask is applied to the image, and the transformed poster is combined with the original image using bitwise operations, resulting in the final image with the poster placed correctly within the marker-defined region.
+To integrate the transformed poster into the original image, a mask is created, which isolates the transformed poster region. The mask is then inverted so that only the region outside the poster area is kept, ensuring that the poster seamlessly blends with the background. Finally, the mask is applied to the image, and the transformed poster is combined with the original image using the bitwise_not operation, resulting in the final image with the poster placed correctly within the marker-defined region.
 
 \section{Evaluation and Validation}
 
