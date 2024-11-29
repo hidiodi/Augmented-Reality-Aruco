@@ -167,25 +167,9 @@ Finally, the evaluation results are visualized by overlaying the detected lines 
     \end{figure}
     
     \\
-    Bei der Analyse der Bilder zeigt sich jedoch, dass die Erkennung des Aruco-Markers nicht in jeder Perspektive zuverlässig funktioniert. Beim Vergleich der horizontalen Fluchtpunktlinien des Posters(Grün) mit der Metallstange(Rot) wird sichtbar, dass die Fluchtpunktlinien mit zunehmender Entfernung immer weiter von der Stange abweichen und schließlich abweichen.
-    Abgesehen vom Fluchtpunkt sind die Poster in der Platzierung und dem Aspekt ratio konsistent und erlauben ein Stabiles einfügen der Poster. Die Teilweise verzerrten Poster lassen sich auch auf die Auflösung der Bilder, speziell des Aruco-Markers zurückführen.
-    \begin{figure}[h!]
-        \centering
-        \includegraphics[width=0.9\columnwidth]{img/img_result_bad_113437.jpg} % Beispielbild
-        \caption{Beispiel für eine Perspektive bei welcher der Fluchtpunkt schlecht erkannt wurde.}
-        \label{fig:bad-example-result}
-    \end{figure}
-    
-    \section{Fazit und Ausblick}
-    
-    Im Rahmen dieses Projekts wurde eine Software zur Platzierung von Postern in einem Bild entwickelt. Dafür wurden hauptsächlich der Aruco-Marker und die Bibliothek OpenCV verwendet.
-    \\
-    Die Ergebnisse der Posterplatzierung sind grundsätzlich solide und positionieren das Poster in der richtigen Größe im Raum. Die Abweichung zwischen der berechneten und der tatsächlichen Verzerrung ist in den analysierten Bildern so geringfügig, dass die Fehler nicht störend wirken. Fehler sind sehr viel stärker, wenn der Arcuo Marker eine geringere Auflösung hat und deswegen die Ecken nicht genau erkannt werden.
-    \\
-    Eine Verbesserung der Marker Erkennung war im Umfang dieser Arbeit nicht möglich und könnte im Rahmen einer umfangreicheren wissenschaftlichen Untersuchung weiter optimiert werden.
 \\
 However, when analyzing further images, it becomes apparent that the detection of the Aruco marker does not work reliably in every perspective. An example of this is . Ein Beispiel hierfür ist in Abbildung \ref{fig:bad-example-result} zu sehen. Beim Vergleich der horizontalen Fluchtpunktlinien des Posters(Grün) mit der Metallstange(Rot) wird sichtbar, dass die Fluchtpunktlinien mit zunehmender Entfernung immer weiter von der Stange abweichen und schließlich abweichen.
-Apart from the vanishing point, the posters are consistent in terms of placement and aspect ratio and allow the posters to be inserted stably.
+Apart from the vanishing point, the posters are consistent in terms of placement and aspect ratio and allow the posters to be inserted stably. Some of the distorted Posters are caused by the Image quality, this leads causes the corners of the marker to be detected slightly wrong and therefore distort the transformation.
 \begin{figure}[h!]
     \centering
     \includegraphics[width=0.9\columnwidth]{img/img_result_bad_113437.jpg} % Beispielbild
