@@ -1,0 +1,6 @@
+names:
+- car
+- pedestrian
+nc: 2
+train: KITTI_Selection
+val: KITTI_Selection
