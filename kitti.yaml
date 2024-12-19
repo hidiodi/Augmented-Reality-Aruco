@@ -2,5 +2,5 @@ names:
 - car
 - pedestrian
 nc: 2
-train: KITTI_Selection
-val: KITTI_Selection
+train: prepared_dataset\images
+val: prepared_dataset\images

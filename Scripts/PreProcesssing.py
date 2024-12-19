@@ -1,10 +1,11 @@
 import os
-
+import cv2 as cv
 # Pfade
-base_dir = "KITTI_Selection"
+base_dir = "datasets/KITTI_Selection"
 image_dir = os.path.join(base_dir, "images")
 label_dir = os.path.join(base_dir, "labels")
-output_dir = "prepared_dataset"
+output_dir = "datasets/prepared_dataset"
+
 os.makedirs(output_dir, exist_ok=True)
 os.makedirs(os.path.join(output_dir, "images"), exist_ok=True)
 os.makedirs(os.path.join(output_dir, "labels"), exist_ok=True)
@@ -58,7 +59,14 @@ for img_file in os.listdir(image_dir):
     # Labels konvertieren
     convert_label(label_path, yolo_label_path, img_width, img_height)
     
+    new_width, new_height = 1248, 512
+    # Bild laden und skalieren
+    img = cv.imread(os.path.join(image_dir, img_file))
+    resized_img = cv.resize(img, (new_width, new_height))
+    
+
     # Bild kopieren
-    os.rename(img_path, os.path.join(output_dir, "images", img_file))
+    img_output_path = os.path.join(output_dir, "images", img_file)
+    cv.imwrite(img_output_path, resized_img)
 
 print("Dataset erfolgreich vorbereitet!")
