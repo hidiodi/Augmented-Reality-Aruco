@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 # Absoluter Pfad zur trainierten Modell-Datei
-model_path = "runs/detect/train/weights/best.pt"
+model_path = "runs/detect/train2/weights/best.pt"
 if not os.path.exists(model_path):
     raise FileNotFoundError(f"Modell-Datei nicht gefunden: {model_path}")
 
