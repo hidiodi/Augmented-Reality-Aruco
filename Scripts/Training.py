@@ -3,14 +3,15 @@ import os
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 # Modell initialisieren
-model = YOLO("yolo11n.pt")  # Sie können yolov8s.pt oder ein anderes Modell verwenden
+#model = YOLO("yolo11n.pt")  # Sie können yolov11s.pt oder ein anderes Modell verwenden
 
+model = YOLO("runs/detect/train/weights/best.pt")  # Pfad zu den vortrainierten Gewichten
 # Training
 model.train(
     data="kitti.yaml",
-    epochs=100,
-    imgsz=(1248, 512),
-    batch=64,
-)
+    epochs=50,
+    batch=32,
+    augment=True,
+    )
 model.val(data="kitti.yaml")
 # Ergebnisse anzeigen
