@@ -156,56 +156,47 @@ def read_intrinsic_matrix(file_path):
 #Distance Calculation
 K = read_intrinsic_matrix(calib_path)
 
-# Camera height above the ground (in meters)
-camera_height = 1.65
+camera_height = 1.65  # Camera height from the ground
 
-def CalculateDistance(original_label_path, predicted_boxes, read_ground_truth, K, camera_height):
+# Function to compute the horizontal distance
+ 
+def calculate_distance_from_bbox(predicted_boxes, img_height, img_width, K, camera_height):
     for i, box in enumerate(predicted_boxes):
-        # Bounding box coordinates from YOLO (in pixels)
-        x_min, y_min, x_max, y_max = box  
-        print(f"Bounding Box Coordinates: ({x_min}, {y_min}) to ({x_max}, {y_max})")
-        
-        # Bottom center of the bounding box
+        # 1. Bounding Box Center (Bottom-Center)
+        x_min, y_min, x_max, y_max = box
         x_center = (x_min + x_max) / 2
-        y_center = y_max  # Use y_max for the bottom center
+        y_center = y_max  # Bottom of the box
+
         print(f"Bounding Box Center: ({x_center}, {y_center})")
 
-        # Step 1: Inverse of the Intrinsic Matrix
+        # 2. Inverse of Intrinsic Matrix
         K_inv = np.linalg.inv(K)
-        print(f"Inverse Matrix:\n{K_inv}")
 
-        # Step 2: Compute the ray direction from the camera (normalized)
-        img_height = 375
-        y_center_bottom_adjusted = img_height - y_center  # Invert y-coordinate to match camera coordinate system
-
-        # Compute the ray direction using the adjusted y-coordinate
-        ray_direction = K_inv @ np.array([x_center, y_center_bottom_adjusted, 1])
-        print(f"Ray Direction: {ray_direction}")
-
-        # Ray direction vector is now in camera coordinates [r_x, r_y, r_z]
+        # 3. Convert Pixel Coordinates to Camera Coordinates
+        ray_direction = K_inv @ np.array([x_center, img_height - y_center, 1])
         r_x, r_y, r_z = ray_direction
         print(f"Ray Direction: [{r_x:.2f}, {r_y:.2f}, {r_z:.2f}]")
 
-        # Step 3: Solve for t where the ray intersects the ground (Y=0)
-        # t is the scaling factor for the ray to reach the ground
-        if r_y == 0:
-            print("Warning: r_y is zero, can't compute t")
-            continue  # Skip this box as it won't intersect the ground
-        t = camera_height / r_y  # Assuming ground is at Y = 0
-        print(f"Scaling factor t: {t}")
+        # 4. Calculate Scaling Factor (t) for Ground Plane Intersection
+        if r_y >= 0:
+            print("Ray does not intersect the ground plane.")
+            continue
+        t = camera_height / -r_y
 
-        # Step 4: Calculate the horizontal distance (D) using Pythagoras
-        L = ray_direction * t
-        horizontal_distance = np.sqrt(np.inner(L,L) - camera_height**2)  # Only consider x and z for horizontal distance
+        # 5. Compute Intersection Point in Camera Coordinates
+        intersection_camera = t * ray_direction
+        P_x, P_y, P_z = intersection_camera
+        print(f"Intersection Point in Camera Coordinates: [P_x: {P_x:.2f}, P_y: {P_y:.2f}, P_z: {P_z:.2f}]")
 
-        # Get ground truth data
-        gt = read_ground_truth(original_label_path)
-        print(f"Horizontal Distance to the car: {horizontal_distance:.2f} meters compared to the real distance of {gt[i]['gt_distance']} meters")
+        rayLength = np.linalg.norm(intersection_camera)
+        # 6. Compute Horizontal Distance
+        horizontal_distance = np.sqrt(rayLength**2 - camera_height**2)
 
-# Example usage (make sure the necessary variables are defined):
+        gt= read_ground_truth(original_label_path)
+        print(f"Horizontal Distance to the Object: {horizontal_distance:.2f} meters compared to {gt[i]['gt_distance']} meters")
 
-CalculateDistance(original_label_path, predicted_boxes, read_ground_truth, K, camera_height)
-CalculateDistance(original_label_path, ground_truth_boxes, read_ground_truth, K, camera_height)
+calculate_distance_from_bbox(predicted_boxes, img_height, img_width, K, camera_height)
+calculate_distance_from_bbox(ground_truth_boxes, img_height, img_width, K, camera_height)
 
 # Ausgabe-Bild speichern oder anzeigen
 output_path = "output_image.png"
