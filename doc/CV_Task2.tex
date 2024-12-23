@@ -17,20 +17,220 @@
 \section{Introduction}
 % Empty text field
 
-\section{Methodology}
-% Empty text field
+\section{Preprocessing}
 
-\section{Results}
-% Empty text field
-Key Concepts:
+To utilize the KITTI dataset for our object detection and depth estimation task, we prepared the data by resizing images and converting the annotation format. This step ensures compatibility with the YOLOv11 object detection framework.
 
-    Camera Model: The camera is modeled with an intrinsic matrix (which describes how 3D world coordinates are projected to 2D image coordinates).
+\subsection{Directory Structure}
+The dataset resides in the \texttt{datasets/KITTI\_Selection} directory, containing:
+\begin{itemize}
+    \item \texttt{images/}: Original KITTI images in PNG format.
+    \item \texttt{labels/}: Corresponding bounding box annotations in KITTI format.
+\end{itemize}
+Processed data is saved in \texttt{datasets/prepared\_dataset}.
 
-    Ray from Camera: We compute a ray from the camera’s optical center to a point on the image, typically the bottom center of the bounding box in the 2D image.
+\subsection{Annotation Conversion}
+Bounding boxes in the KITTI format are converted to the YOLO format. The YOLO format specifies each bounding box as:
+\[
+\texttt{class\_id}\ x\_center\ y\_center\ width\ height
+\]
+where:
+\begin{itemize}
+    \item \texttt{class\_id}: Numeric identifier for the object class.
+    \item \texttt{x\_center, y\_center}: Normalized coordinates of the bounding box center.
+    \item \texttt{width, height}: Normalized dimensions of the bounding box.
+\end{itemize}
 
-    Intersection with Ground: The ray intersects the ground at Y=0Y=0, and from this, we compute the distance.
+\subsubsection{Implementation}
+We mapped object types from the KITTI labels to YOLO classes using a predefined dictionary (\texttt{object\_classes}). KITTI labels not present in this mapping were ignored. The conversion formula for the bounding box coordinates is:
+\[
+x\_center = \frac{x_{min} + x_{max}}{2 \cdot \texttt{img\_width}},\quad
+y\_center = \frac{y_{min} + y_{max}}{2 \cdot \texttt{img\_height}}
+\]
+\[
+width = \frac{x_{max} - x_{min}}{\texttt{img\_width}},\quad
+height = \frac{y_{max} - y_{min}}{\texttt{img\_height}}
+\]
 
-    Distance Calculation: We need to determine the horizontal distance from the camera to the object by using the ray's intersection with the ground.
+\subsection{Image Resizing}
+To standardize input dimensions for the object detector, all images were resized to \( 1248 \times 512 \) pixels using OpenCV. The resized images were stored in the \texttt{images/} subdirectory of the output path.
+
+\subsection{Code Snippet}
+The preprocessing script is implemented in Python. Below is the main function for annotation conversion and image resizing:
+
+\begin{lstlisting}[language=Python, caption=Preprocessing script, label=lst:preprocessing]
+import os
+import cv2 as cv
+
+# Paths and settings
+base_dir = "datasets/KITTI_Selection"
+image_dir = os.path.join(base_dir, "images")
+label_dir = os.path.join(base_dir, "labels")
+output_dir = "datasets/prepared_dataset"
+# Conversion and resizing code omitted for brevity
+\end{lstlisting}
+
+\subsection{Outcome}
+The script successfully prepared the dataset by:
+\begin{itemize}
+    \item Converting KITTI labels to YOLO format.
+    \item Resizing images to the required dimensions.
+\end{itemize}
+This preprocessing step is a prerequisite for training and evaluating the YOLOv11 object detector on the KITTI dataset.
+
+\section{Training}
+
+To detect objects in the KITTI dataset, we utilized the YOLOv11 object detection framework. This section describes the training procedure, model configuration, and the iterative approach taken to achieve optimal results.
+
+\subsection{YOLOv11 Model}
+We employed a YOLOv11 model initialized with pre-trained weights. This transfer learning approach leverages existing knowledge from a larger dataset to accelerate convergence and improve detection performance on the KITTI dataset. 
+
+The training script was implemented in Python using the \texttt{ultralytics} library.
+
+\subsection{Training Configuration}
+The model was fine-tuned on our prepared KITTI dataset. The training process involved:
+\begin{itemize}
+    \item \textbf{Data Configuration:} The \texttt{kitti.yaml} file specifies dataset paths, object classes, and splits for training, validation, and testing.
+    \item \textbf{Hyperparameters:}
+    \begin{itemize}
+        \item \texttt{epochs:} 100
+        \item \texttt{batch size:} 32
+        \item \texttt{augment:} True
+    \end{itemize}
+    \item \textbf{Model Initialization:} Pre-trained weights from \texttt{runs/detect/train2/weights/best.pt} were used.
+\end{itemize}
+
+\subsection{Implementation}
+The training and validation processes are implemented as follows:
+
+\begin{lstlisting}[language=Python, caption=Training and validation script, label=lst:training]
+from ultralytics import YOLO
+import os
+
+# Avoiding conflicts in the runtime environment
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+
+# Model initialization with pre-trained weights
+model = YOLO("runs/detect/train2/weights/best.pt")
+
+# Training the model
+model.train(
+    data="kitti.yaml",
+    epochs=100,
+    batch=32,
+    augment=True
+)
+
+# Validation
+model.val(data="kitti.yaml")
+\end{lstlisting}
+
+\subsection{Iterative Training Approach}
+To refine the model's performance, we conducted multiple training runs with variations in hyperparameters and data augmentation settings. Key changes included adjustments to:
+\begin{itemize}
+    \item Epoch count to balance convergence and overfitting.
+    \item Batch size for optimizing memory usage and gradient updates.
+    \item Data augmentation to improve robustness to diverse scenes.
+\end{itemize}
+
+\subsection{Results}
+The training process successfully converged, yielding a set of weights that accurately detect objects in the KITTI dataset. The validation results indicate the model's performance metrics, such as precision, recall, and loss curves, which will be discussed in the following sections.
+
+
+\section{Prediction}
+
+In this section, we describe the methodology used to generate predictions on the test dataset, calculate Intersection over Union (IoU) for bounding box evaluation, and estimate the horizontal distance to detected objects using intrinsic camera parameters.
+
+\subsection{Model Prediction}
+Using the trained YOLOv11 model, predictions were generated for test images. The model outputs bounding boxes, confidence scores, and class labels for each detected object. The process is implemented as follows:
+
+\begin{lstlisting}[language=Python, caption=Generating predictions using YOLOv11, label=lst:prediction]
+from ultralytics import YOLO
+import cv2
+
+# Load trained model
+model_path = "runs/detect/train2/weights/best.pt"
+model = YOLO(model_path)
+
+# Predict on a sample image
+image_path = "datasets/prepared_dataset/images/006059.png"
+results = model.predict(image_path)
+
+# Process results
+for result in results:
+    boxes = result.boxes.xyxy.cpu().numpy()  # Bounding box coordinates
+    scores = result.boxes.conf.cpu().numpy()  # Confidence scores
+    classes = result.boxes.cls.cpu().numpy()  # Class labels
+\end{lstlisting}
+
+\subsection{Evaluation Metrics}
+To evaluate the quality of predictions, the Intersection over Union (IoU) metric was calculated for each detected bounding box. The IoU is defined as:
+\[
+\text{IoU} = \frac{\text{Area of Overlap}}{\text{Area of Union}}
+\]
+where the overlap is the intersection of the predicted and ground truth bounding boxes. The function to calculate IoU is implemented as follows:
+
+\begin{lstlisting}[language=Python, caption=IoU calculation, label=lst:iou]
+def calculate_iou(box1, box2):
+    x1, y1, x2, y2 = box1
+    x1g, y1g, x2g, y2g = box2
+
+    xi1 = max(x1, x1g)
+    yi1 = max(y1, y1g)
+    xi2 = min(x2, x2g)
+    yi2 = min(y2, y2g)
+
+    inter_area = max(0, xi2 - xi1) * max(0, yi2 - yi1)
+    box1_area = (x2 - x1) * (y2 - y1)
+    box2_area = (x2g - x1g) * (y2g - y1g)
+    union_area = box1_area + box2_area - inter_area
+
+    return inter_area / union_area
+\end{lstlisting}
+
+\subsection{Distance Estimation}
+Using the intrinsic matrix provided in the KITTI dataset, we estimated the horizontal distance to objects based on their bounding box coordinates. The procedure involves:
+\begin{enumerate}
+    \item Transforming pixel coordinates (bounding box center) to camera coordinates using the intrinsic matrix.
+    \item Projecting a ray from the camera through the pixel into the 3D environment.
+    \item Intersecting this ray with the ground plane to calculate the distance.
+\end{enumerate}
+
+The calculation is described mathematically as follows:
+\[
+\mathbf{L} = K^{-1} \cdot \mathbf{p}, \quad \mathbf{p} = [x, y, 1]^T
+\]
+\[
+t = \frac{\text{camera height}}{-\text{ray direction}_y}, \quad \text{intersection} = t \cdot \mathbf{L}
+\]
+The Python implementation is shown below:
+\begin{lstlisting}[language=Python, caption=Distance calculation, label=lst:distance]
+def calculate_distance_from_bbox(predicted_boxes, img_height, img_width, K, camera_height):
+    for box in predicted_boxes:
+        x_min, y_min, x_max, y_max = box
+        x_center = (x_min + x_max) / 2
+        y_center = y_max  # Bottom of the box
+
+        # Transform to camera coordinates
+        ray_direction = np.linalg.inv(K) @ np.array([x_center, y_center, 1])
+        ray_direction /= np.linalg.norm(ray_direction)
+
+        # Scale to ground plane
+        t = camera_height / -ray_direction[1]
+        intersection = t * ray_direction
+        horizontal_distance = np.linalg.norm(intersection[:2])
+        print(f"Horizontal Distance: {horizontal_distance:.2f} meters")
+\end{lstlisting}
+
+\subsection{Results}
+The predictions and ground truth were overlaid on test images for visual verification. IoU values were computed for each detection to assess bounding box quality. Horizontal distances were compared with the ground truth for validation. The following figure illustrates the results:
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{output_image.png}
+    \caption{Predicted bounding boxes (green) and ground truth (red) with calculated distances.}
+    \label{fig:predictions}
+\end{figure}
+
 \section{Discussion}
 % Empty text field
 

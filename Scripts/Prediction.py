@@ -10,7 +10,7 @@ if not os.path.exists(model_path):
 
 # Trainiertes Modell laden
 model = YOLO(model_path)
-bild = "006227"
+bild = "006059"
 # Absoluter Bildpfad
 image_path = "datasets/prepared_dataset/images/"+bild+".png"
 if not os.path.exists(image_path):
@@ -155,33 +155,44 @@ def read_intrinsic_matrix(file_path):
 
 #Distance Calculation
 K = read_intrinsic_matrix(calib_path)
-
+print(f"Intrinsic Matrix: \n{K}")
 camera_height = 1.65  # Camera height from the ground
 
 # Function to compute the horizontal distance
  
 def calculate_distance_from_bbox(predicted_boxes, img_height, img_width, K, camera_height):
+    print(img_height, img_width)
+    gt= read_ground_truth(original_label_path)
     for i, box in enumerate(predicted_boxes):
         # 1. Bounding Box Center (Bottom-Center)
+        print(box)
         x_min, y_min, x_max, y_max = box
         x_center = (x_min + x_max) / 2
         y_center = y_max  # Bottom of the box
 
-        print(f"Bounding Box Center: ({x_center}, {y_center})")
+        print(f"Bounding Box Center: ({x_center:.2f}, {y_center:.2f})")
 
         # 2. Inverse of Intrinsic Matrix
         K_inv = np.linalg.inv(K)
 
+        print(f"Inverse of Intrinsic Matrix: \n{K_inv}")
         # 3. Convert Pixel Coordinates to Camera Coordinates
-        ray_direction = K_inv @ np.array([x_center, img_height - y_center, 1])
+        ray_direction = K_inv @ np.array([x_center, y_center, 1])
+        ray_direction /= np.linalg.norm(ray_direction)
         r_x, r_y, r_z = ray_direction
         print(f"Ray Direction: [{r_x:.2f}, {r_y:.2f}, {r_z:.2f}]")
 
+        ray_direction  = np.array([gt[i]['gt_distance'], camera_height,1])
+        ray_direction = ray_direction / np.linalg.norm(ray_direction)
+
+        z = np.dot(K, gt[i]['gt_distance'] * ray_direction)
+        z = z / z[2]
+        print(f"Pixel Coordinates: ({z[0]:.2f}, {z[1]:.2f}, {z[2]:.2f})")
+        r_x, r_y, r_z = ray_direction
+        print(f"Ray Direction: [{r_x:.2f}, {r_y:.2f}, {r_z:.2f}]")
         # 4. Calculate Scaling Factor (t) for Ground Plane Intersection
-        if r_y >= 0:
-            print("Ray does not intersect the ground plane.")
-            continue
         t = camera_height / -r_y
+        print(f"Scaling Factor (t): {t:.2f}")
 
         # 5. Compute Intersection Point in Camera Coordinates
         intersection_camera = t * ray_direction
@@ -189,18 +200,19 @@ def calculate_distance_from_bbox(predicted_boxes, img_height, img_width, K, came
         print(f"Intersection Point in Camera Coordinates: [P_x: {P_x:.2f}, P_y: {P_y:.2f}, P_z: {P_z:.2f}]")
 
         rayLength = np.linalg.norm(intersection_camera)
+        print(f"Ray Length: {rayLength:.2f} meters")
         # 6. Compute Horizontal Distance
         horizontal_distance = np.sqrt(rayLength**2 - camera_height**2)
 
-        gt= read_ground_truth(original_label_path)
+        
         print(f"Horizontal Distance to the Object: {horizontal_distance:.2f} meters compared to {gt[i]['gt_distance']} meters")
 
-calculate_distance_from_bbox(predicted_boxes, img_height, img_width, K, camera_height)
+#calculate_distance_from_bbox(predicted_boxes, img_height, img_width, K, camera_height)
 calculate_distance_from_bbox(ground_truth_boxes, img_height, img_width, K, camera_height)
 
 # Ausgabe-Bild speichern oder anzeigen
 output_path = "output_image.png"
 cv2.imwrite(output_path, image)
-cv2.imshow("Ergebnisse", image)
+#cv2.imshow("Ergebnisse", image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
