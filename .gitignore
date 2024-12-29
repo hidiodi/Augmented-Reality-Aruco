@@ -12,7 +12,6 @@ doc/CV_Task1.fdb_latexmk
 doc/CV_Task1.aux
 doc/CV_Task1.out
 *.quarantine
-/runs
 /output
 /KITTI_Selection
 /.history
