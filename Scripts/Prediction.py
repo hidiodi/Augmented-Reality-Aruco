@@ -224,12 +224,12 @@ for img in img_list:
             r_x, r_y, r_z = ray_direction
             #print(f"Ray Direction: [{r_x:.2f}, {r_y:.2f}, {r_z:.2f}]")
             # 4. Calculate Scaling Factor (t) for Ground Plane Intersection
-            t = camera_height / -r_y
+            t = camera_height / r_y
             #print(f"Scaling Factor (t): {t:.2f}")
 
             # 5. Compute Intersection Point in Camera Coordinates
             intersection_camera = t * ray_direction
-            P_x, P_y, P_z = intersection_camera
+            #P_x, P_y, P_z = intersection_camera
             #print(f"Intersection Point in Camera Coordinates: [P_x: {P_x:.2f}, P_y: {P_y:.2f}, P_z: {P_z:.2f}]")
 
             rayLength = np.linalg.norm(intersection_camera)

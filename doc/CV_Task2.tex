@@ -221,7 +221,7 @@ x_i2 = \min(x_2, x_{2g}), \quad y_i2 = \min(y_2, y_{2g})
 \text{IoU} = \frac{\text{inter\_area}}{\text{union\_area}}
 \]
 
-\section{Distance Estimation}
+\section{Horizontal Distance Calculation}
 
 The function computes the horizontal distance from the camera to the point where the ray, originating from the lower center of a bounding box in the image, intersects with the ground plane. This process uses the camera’s intrinsic matrix, the height of the camera and the assumption the images are all on a flat plane. 
 
@@ -270,10 +270,12 @@ The components of the normalized ray direction are denoted as \(r_x\), \(r_y\), 
 
 
 \subsection{Calculate Scaling Factor (t) for Ground Plane Intersection}
-To compute the intersection of the ray with the ground plane, we calculate a scaling factor \(t\), which scales the direction vector such that the ray intersects the ground at the height of the camera. The scaling factor is calculated by dividing the camera height by the negative value of \(r_y\), the vertical component of the direction vector:
-
+To compute the intersection of the ray with the ground plane, we calculate a scaling factor \(t\), which scales the direction vector such that the ray intersects the ground. The scaling factor is calculated by dividing the camera height by the value of \(r_y\), the vertical component of the direction vector:
 \[
-t = \frac{\text{camera\_height}}{-r_y}
+0 = t\cdot{r_y} - \text{camera\_height}
+\]
+\[
+t = \frac{\text{camera\_height}}{r_y}
 \]
 
 \subsection{Compute Intersection Point in Camera Coordinates}
@@ -283,11 +285,6 @@ Once the scaling factor \(t\) is determined, we can compute the intersection poi
 \text{intersection\_camera} = t \cdot \text{ray\_direction}
 \]
 
-The coordinates of the intersection point are denoted as \(P_x\), \(P_y\), and \(P_z\):
-
-\[
-P_x, P_y, P_z = \text{intersection\_camera}
-\]
 
 The ray length, which is the distance from the camera to the intersection point, is given by the magnitude of the intersection point:
 
@@ -298,10 +295,34 @@ The ray length, which is the distance from the camera to the intersection point,
 \subsection{Compute Horizontal Distance}
 Finally, the horizontal distance to the ground plane is computed by projecting the intersection point onto the ground. This is done by calculating the distance between the camera and the intersection point. The horizontal distance is given by:
 
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}
+        % Camera height (a) line (vertical)
+        \draw[thick] (0, 0) -- (0, 2);
+        \node at (-1.3, 1) {camera\_height};
+
+        % Distance (b) line (horizontal)
+        \draw[thick] (0, 0) -- (2, 0);
+        \node at (1, -0.2) {distance};
+
+        % Hypotenuse (r * t) line (diagonal)
+        \draw[thick] (0, 2) -- (2, 0);
+        \node at (2, 1) {rayLength};
+
+        % Right angle mark
+        \draw[thick] (0, 0) rectangle (0.2, 0.2);
+
+        % Adding the right-angle symbol clearly
+        \node at (0.2, 0.2) [rotate=45] {.};
+
+    \end{tikzpicture}
+    \caption{Right Triangle Representation of the Pythagorean Theorem for Camera Height, Distance, and Ray}
+\end{figure}
+
 \[
 \text{horizontal\_distance} = \sqrt{\text{rayLength}^2 - \text{camera\_height}^2}
 \]
-
 This value represents the horizontal distance from the camera to the point where the ray intersects the ground.
 
 \section{Summary}
