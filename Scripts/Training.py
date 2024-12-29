@@ -10,7 +10,7 @@ model = YOLO("runs/detect/train2/weights/best.pt")  # Pfad zu den vortrainierten
 model.train(
     data="kitti.yaml",
     epochs=100,
-    batch=32,
+    batch=20,
     augment=True,
     )
 model.val(data="kitti.yaml")

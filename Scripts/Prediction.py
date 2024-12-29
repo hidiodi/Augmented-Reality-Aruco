@@ -14,6 +14,7 @@ model = YOLO(model_path)
 image__folder_path = "datasets/prepared_dataset/images/"
 img_list = [datei for datei in os.listdir(image__folder_path) if datei.endswith('.png')]
 
+distances = []
 for img in img_list:
     bild = img.split('.')[0]
     print(f"Verarbeite Bild: {bild}")
@@ -195,6 +196,7 @@ for img in img_list:
     # Function to compute the horizontal distance
     def calculate_distance_from_bbox(predicted_boxes, img_height, img_width, K, camera_height):
         gt= read_ground_truth(original_label_path)
+        distances_bb = []
         for i, box in enumerate(predicted_boxes):
             # 1. Bounding Box Center (Bottom-Center)
             x_min, y_min, x_max, y_max = box
@@ -237,7 +239,8 @@ for img in img_list:
 
             
             print(f"Horizontal Distance to the Object: {horizontal_distance:.2f} meters compared to {gt[i]['gt_distance']} meters")
-            return horizontal_distance
+            distances_bb = horizontal_distance, (gt[i]['gt_distance'])
+            distances.append(distances_bb)
 
     calculate_distance_from_bbox(predicted_boxes, img_height, img_width, K, camera_height)
     #calculate_distance_from_bbox(ground_truth_boxes, img_height, img_width, K, camera_height)
@@ -248,3 +251,36 @@ for img in img_list:
     #cv2.imshow("Ergebnisse", image)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
+
+
+import matplotlib.pyplot as plt
+
+# Filter out empty lists and None values, then extract the calculated and ground truth distances
+calculated_distances = [dist[0] for dist in distances if isinstance(dist, tuple) and len(dist) == 2]
+ground_truth_distances = [dist[1] for dist in distances if isinstance(dist, tuple) and len(dist) == 2]
+
+# Create a scatter plot comparing calculated distances vs ground truth distances
+plt.figure(figsize=(10, 6))
+plt.scatter(calculated_distances, ground_truth_distances, color='b', marker='o', s=100, edgecolor='k')
+
+# Add a line y = x for orientation
+# We need to create a line that spans the range of the data
+max_value = max(max(calculated_distances), max(ground_truth_distances))  # Get max value for scaling the line
+x_line = [0, max_value]
+y_line = x_line  # Since it's y = x
+
+plt.plot(x_line, y_line, color='b', linestyle='-', linewidth=2, label="y = x")  # Red dashed line for y = x
+
+# Set labels and title
+plt.xlabel("Distance calculated using camera information", fontsize=14)
+plt.ylabel("Distance provided in ground truth", fontsize=14)
+plt.title("Horizontal Distances to Objects", fontsize=14)
+
+# Add gridlines for readability
+plt.grid(True, linestyle='--', alpha=0.7)
+
+# Show legend for the line
+plt.legend()
+
+# Show the plot
+plt.show()
