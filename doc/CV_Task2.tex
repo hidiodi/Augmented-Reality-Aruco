@@ -1,48 +1,118 @@
-\documentclass{article}
+\documentclass[a4paper,twocolumn]{article}
 \usepackage[utf8]{inputenc}
+\usepackage[a4paper,margin=2cm]{geometry} % Seitenränder anpassen
+\usepackage{graphicx} % Für Grafiken
+\usepackage{amsmath, amssymb} % Für mathematische Formeln
+\usepackage{hyperref} % Für Hyperlinks
+\usepackage{caption} % Für Bildunterschriften
+\usepackage[printonlyused]{acronym}
+\usepackage{pgffor} % Paket für die foreach-Schleife
+\usepackage{shellesc} % Für das Ausführen von Shell-Befehlen (mit pdflatex -shell-escape)
+\usepackage{todonotes}
+\usepackage{float}
 \usepackage{authblk}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{tikz}
 
-\title{CV Task 2}
+% Abstand zwischen den Spalten erhöhen
+\setlength{\columnsep}{1cm} 
 
-\author[1]{Author One}
-\author[2]{Author Two}
-
-\affil[1]{Affiliation One}
-\affil[2]{Affiliation Two}
+\title{Augmented Reality with ArUco Markers}
+\author{
+    Hochschule Ravensburg-Weingarten \\[1em] % Hochschule zentriert
+    \begin{minipage}[t]{0.45\textwidth} % Linke Spalte
+        \centering
+        Jonas Alber \\ % Name
+        Master Informatik \\
+        15444427\\
+        \texttt{jonas.alber@hs-weingarten.de} % E-Mail
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.45\textwidth} % Rechte Spalte
+        \centering
+        Tim Schweitzer \\ Master Informatik \\  29844429  \\% Name
+        \texttt{tim.schweitzer@hs-weingarten.de} % E-Mail
+    \end{minipage}
+}
+\date{\today}
 
 \begin{document}
 
 \maketitle
 
+\section*{Disclaimer}
+The content of this document was created by the authors mentioned above. ChatGPT from OpenAI was used to improve readability. However, all content has been checked by the authors and adapted where necessary.
+
+\section*{List of abbreviations}
+\begin{acronym}[RWU]
+    \acro{RWU}{Hochschule Ravensburg Weingarten}
+    \acro{AI}{Artificial Intelligence}
+    \acro{IoT}{Internet of Things}
+    \acro{KITTI}{Karlsruhe Institute of Technology and Toyota Technological Institute}
+    \acro{YOLO}{You only look once}
+    \acro{Bbox}{Bounding Box}
+    \acro{CNN}{Convolutional Neural Networks}
+\end{acronym}
+
+
 \section{Introduction}
 % Empty text field
 
-\section{Preprocessing}
+\section{Setup}
 
-To utilize the KITTI dataset for our object detection and depth estimation task, we prepared the data by resizing images and converting the annotation format. This step ensures compatibility with the YOLOv11 object detection framework.
+\subsection{Neuronal Network}
+YOLO (You Only Look Once) is an object detection system that was first released in 2016 \cite{redmon2016you}. It is required for this project. The YOLOv11 model was used for object detection in the KITTI dataset.
 
-\subsection{Directory Structure}
-The dataset resides in the \texttt{datasets/KITTI\_Selection} directory, containing:
+\todo[inline]{Erklären kurz wieso wir YOLOv11 nutzen und das YOLO ein CNN ist}
+
+\subsection{Preprocessing}
+
+To utilize the \ac{KITTI} dataset for our object detection and depth estimation task, we prepared the data by resizing images and converting the annotation format. This step ensures compatibility with the \ac{YOLO}v11 object detection framework. The preprocessing script, implemented in Python, performs the following tasks:
+
 \begin{itemize}
-    \item \texttt{images/}: Original KITTI images in PNG format.
-    \item \texttt{labels/}: Corresponding bounding box annotations in KITTI format.
+    \item Annotation Conversion.
+    \item Image Resizing.
 \end{itemize}
-Processed data is saved in \texttt{datasets/prepared\_dataset}.
 
-\subsection{Annotation Conversion}
-Bounding boxes in the KITTI format are converted to the YOLO format. The YOLO format specifies each bounding box as:
-\[
-\texttt{class\_id}\ x\_center\ y\_center\ width\ height
-\]
-where:
+The script processes the dataset once, converting and saving the images and annotations in the required format.
+
+\subsubsection{Annotation Conversion}
+
+The images used define the \ac{Bbox} using the \ac{KITTI} standard. This definition is not compatible with the \ac{Bbox} definition of YOLO, so they need to be converted. The \ac{KITTI} defines the \ac{Bbox} with the following parameters:
+\begin{itemize}
+    \item \texttt{x\_min, y\_min}: Upper left corner coordinates of the image.
+    \item \texttt{x\_max, y\_max}: Lower right corner coordinates of the image.
+\end{itemize}
+so that the resulting \ac{Bbox} looks like:
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        % Draw the bounding box
+        \draw[thick] (0, 0) rectangle (4, 2);
+        % Draw the corners
+        \filldraw[red] (0, 2) circle (2pt);
+        \node[anchor=south east, black] at (0, 2) {\texttt{x\_min}, \texttt{y\_min}};
+        \filldraw[red] (4, 0) circle (2pt);
+        \node[anchor=north west, black] at (4, 0) {\texttt{x\_max}, \texttt{y\_max}};
+    \end{tikzpicture}
+    \caption{Example of a bounding box in KITTI format.}
+\end{figure}
+
+In contrast, the \ac{YOLO} format specifies each bounding box as:
 \begin{itemize}
     \item \texttt{class\_id}: Numeric identifier for the object class.
     \item \texttt{x\_center, y\_center}: Normalized coordinates of the bounding box center.
     \item \texttt{width, height}: Normalized dimensions of the bounding box.
 \end{itemize}
 
-\subsubsection{Implementation}
-We mapped object types from the KITTI labels to YOLO classes using a predefined dictionary (\texttt{object\_classes}). KITTI labels not present in this mapping were ignored. The conversion formula for the bounding box coordinates is:
+\ac{KITTI} does not support the class identifier, so we omitted this field in the conversion. Therefore, car is identified as 1.
+To convert the bounding box coordinates, we used the following formulas:
+
+\[
+\texttt{img\_width} = x_{max} - x_{min},\quad
+\texttt{img\_height} = y_{max} - y_{min}
+\]
 \[
 x\_center = \frac{x_{min} + x_{max}}{2 \cdot \texttt{img\_width}},\quad
 y\_center = \frac{y_{min} + y_{max}}{2 \cdot \texttt{img\_height}}
@@ -52,143 +122,101 @@ width = \frac{x_{max} - x_{min}}{\texttt{img\_width}},\quad
 height = \frac{y_{max} - y_{min}}{\texttt{img\_height}}
 \]
 
-\subsection{Image Resizing}
+The resulting \ac{Bbox} in \ac{YOLO} format is shown in Figure \ref{fig:bounding_box_example}.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        % Draw the bounding box
+        \draw[thick] (0, 0) rectangle (4, 2);
+        % Draw the center point
+        \filldraw[red] (2, 1) circle (2pt);
+        % Add labels
+        \node at (2, 2.2) {\texttt{width}};
+        \node[rotate=90] at (-0.2, 1) {\texttt{height}};
+        \node at (2, 0.8) {\texttt{(x\_center, y\_center)}};
+    \end{tikzpicture}
+    \caption{Example of a bounding box in YOLO format.}
+    \label{fig:bounding_box_example}
+\end{figure}
+
+\subsubsection{Image Resizing}
 To standardize input dimensions for the object detector, all images were resized to \( 1248 \times 512 \) pixels using OpenCV. The resized images were stored in the \texttt{images/} subdirectory of the output path.
-
-\subsection{Code Snippet}
-The preprocessing script is implemented in Python. Below is the main function for annotation conversion and image resizing:
-
-\begin{lstlisting}[language=Python, caption=Preprocessing script, label=lst:preprocessing]
-import os
-import cv2 as cv
-
-# Paths and settings
-base_dir = "datasets/KITTI_Selection"
-image_dir = os.path.join(base_dir, "images")
-label_dir = os.path.join(base_dir, "labels")
-output_dir = "datasets/prepared_dataset"
-# Conversion and resizing code omitted for brevity
-\end{lstlisting}
-
-\subsection{Outcome}
-The script successfully prepared the dataset by:
-\begin{itemize}
-    \item Converting KITTI labels to YOLO format.
-    \item Resizing images to the required dimensions.
-\end{itemize}
-This preprocessing step is a prerequisite for training and evaluating the YOLOv11 object detector on the KITTI dataset.
+\todo[inline]{Erklären, warum wir diese Auflösung verwenden: Die Auflösung \( 1248 \times 512 \) Pixel wurde gewählt, um ein Gleichgewicht zwischen Recheneffizienz und ausreichenden Details für eine genaue Objekterkennung zu gewährleisten. Diese Auflösung ist auch mit den Eingabeanforderungen des YOLOv11-Modells kompatibel, was eine optimale Leistung während des Trainings und der Inferenz sicherstellt.}
 
 \section{Training}
 
-To detect objects in the KITTI dataset, we utilized the YOLOv11 object detection framework. This section describes the training procedure, model configuration, and the iterative approach taken to achieve optimal results.
-
-\subsection{YOLOv11 Model}
-We employed a YOLOv11 model initialized with pre-trained weights. This transfer learning approach leverages existing knowledge from a larger dataset to accelerate convergence and improve detection performance on the KITTI dataset. 
-
-The training script was implemented in Python using the \texttt{ultralytics} library.
-
 \subsection{Training Configuration}
-The model was fine-tuned on our prepared KITTI dataset. The training process involved:
-\begin{itemize}
-    \item \textbf{Data Configuration:} The \texttt{kitti.yaml} file specifies dataset paths, object classes, and splits for training, validation, and testing.
-    \item \textbf{Hyperparameters:}
-    \begin{itemize}
-        \item \texttt{epochs:} 100
-        \item \texttt{batch size:} 32
-        \item \texttt{augment:} True
-    \end{itemize}
-    \item \textbf{Model Initialization:} Pre-trained weights from \texttt{runs/detect/train2/weights/best.pt} were used.
-\end{itemize}
+We split the dataset into 80\% for training and 20\% for validation, resulting in 16 images for training and 4 images for validation. This 80:20 split is a common practice in training \ac{CNN} as it provides a good balance between having enough data to train the model and enough data to validate its performance. \\
 
-\subsection{Implementation}
-The training and validation processes are implemented as follows:
+The training configuration included the following key hyperparameters: The model was trained for 100 epochs. An epoch refers to one complete pass through the entire training dataset. Training for multiple epochs helps the model to learn and generalize better. A batch size of 32 was used. This means that 32 samples from the training dataset were processed before the model's internal parameters were updated. A larger batch size can lead to more stable gradient updates. Data augmentation was enabled (set to True). Data augmentation involves applying random transformations to the training data, such as rotations, translations, and flips, to artificially increase the diversity of the training dataset and improve the model's robustness.
 
-\begin{lstlisting}[language=Python, caption=Training and validation script, label=lst:training]
-from ultralytics import YOLO
-import os
+\subsection{Training Process}
+\todo[inline]{Erklären die ergebnisse unseres Trainings mit Bildern und Werten.}
 
-# Avoiding conflicts in the runtime environment
-os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
-
-# Model initialization with pre-trained weights
-model = YOLO("runs/detect/train2/weights/best.pt")
-
-# Training the model
-model.train(
-    data="kitti.yaml",
-    epochs=100,
-    batch=32,
-    augment=True
-)
-
-# Validation
-model.val(data="kitti.yaml")
-\end{lstlisting}
-
-\subsection{Iterative Training Approach}
-To refine the model's performance, we conducted multiple training runs with variations in hyperparameters and data augmentation settings. Key changes included adjustments to:
-\begin{itemize}
-    \item Epoch count to balance convergence and overfitting.
-    \item Batch size for optimizing memory usage and gradient updates.
-    \item Data augmentation to improve robustness to diverse scenes.
-\end{itemize}
-
-\subsection{Results}
-The training process successfully converged, yielding a set of weights that accurately detect objects in the KITTI dataset. The validation results indicate the model's performance metrics, such as precision, recall, and loss curves, which will be discussed in the following sections.
-
-
-\section{Prediction}
-
-In this section, we describe the methodology used to generate predictions on the test dataset, calculate Intersection over Union (IoU) for bounding box evaluation, and estimate the horizontal distance to detected objects using intrinsic camera parameters.
-
-\subsection{Model Prediction}
+\section{Training Evaluation}
 Using the trained YOLOv11 model, predictions were generated for test images. The model outputs bounding boxes, confidence scores, and class labels for each detected object. The process is implemented as follows:
 
 \begin{lstlisting}[language=Python, caption=Generating predictions using YOLOv11, label=lst:prediction]
-from ultralytics import YOLO
-import cv2
-
-# Load trained model
-model_path = "runs/detect/train2/weights/best.pt"
-model = YOLO(model_path)
+# Load the trained YOLOv11 model
+load_model(model_path)
 
 # Predict on a sample image
-image_path = "datasets/prepared_dataset/images/006059.png"
 results = model.predict(image_path)
 
-# Process results
-for result in results:
-    boxes = result.boxes.xyxy.cpu().numpy()  # Bounding box coordinates
-    scores = result.boxes.conf.cpu().numpy()  # Confidence scores
-    classes = result.boxes.cls.cpu().numpy()  # Class labels
+# Process the prediction results
+for each result in results:
+    extract bounding box coordinates
+    extract confidence scores
+    extract class labels
+    calculate IoU
 \end{lstlisting}
 
-\subsection{Evaluation Metrics}
+\todo[inline]{Was bringt der Code überhaupt in der Count Doku?}
 To evaluate the quality of predictions, the Intersection over Union (IoU) metric was calculated for each detected bounding box. The IoU is defined as:
 \[
 \text{IoU} = \frac{\text{Area of Overlap}}{\text{Area of Union}}
 \]
-where the overlap is the intersection of the predicted and ground truth bounding boxes. The function to calculate IoU is implemented as follows:
+where the overlap is the intersection of the predicted and ground truth bounding boxes.
 
-\begin{lstlisting}[language=Python, caption=IoU calculation, label=lst:iou]
-def calculate_iou(box1, box2):
-    x1, y1, x2, y2 = box1
-    x1g, y1g, x2g, y2g = box2
+The Intersection over Union (IoU) metric is calculated as follows:
 
-    xi1 = max(x1, x1g)
-    yi1 = max(y1, y1g)
-    xi2 = min(x2, x2g)
-    yi2 = min(y2, y2g)
+\todo[inline]{Besseres Beispiel für IoU}
+Given two bounding boxes, \( \text{modelPredictionBox} = (x_1, y_1, x_2, y_2) \) and \( \text{expectedBox} = (x_{1g}, y_{1g}, x_{2g}, y_{2g}) \):
 
-    inter_area = max(0, xi2 - xi1) * max(0, yi2 - yi1)
-    box1_area = (x2 - x1) * (y2 - y1)
-    box2_area = (x2g - x1g) * (y2g - y1g)
-    union_area = box1_area + box2_area - inter_area
+1. Calculate the coordinates of the intersection rectangle:
+\[
+x_i1 = \max(x_1, x_{1g}), \quad y_i1 = \max(y_1, y_{1g})
+\]
+\[
+x_i2 = \min(x_2, x_{2g}), \quad y_i2 = \min(y_2, y_{2g})
+\]
 
-    return inter_area / union_area
-\end{lstlisting}
+2. Calculate the area of the intersection rectangle:
+\[
+\text{inter\_area} = \max(0, x_i2 - x_i1) \times \max(0, y_i2 - y_i1)
+\]
 
-\subsection{Distance Estimation}
+3. Calculate the area of both bounding boxes:
+\[
+\text{box1\_area} = (x_2 - x_1) \times (y_2 - y_1)
+\]
+\[
+\text{box2\_area} = (x_{2g} - x_{1g}) \times (y_{2g} - y_{1g})
+\]
+
+4. Calculate the union area:
+\[
+\text{union\_area} = \text{box1\_area} + \text{box2\_area} - \text{inter\_area}
+\]
+
+5. Finally, calculate the IoU:
+\[
+\text{IoU} = \frac{\text{inter\_area}}{\text{union\_area}}
+\]
+
+\section{Distance Estimation}
+\todo[inline]{Hilfe, was ist das?}
 Using the intrinsic matrix provided in the KITTI dataset, we estimated the horizontal distance to objects based on their bounding box coordinates. The procedure involves:
 \begin{enumerate}
     \item Transforming pixel coordinates (bounding box center) to camera coordinates using the intrinsic matrix.
@@ -223,8 +251,7 @@ def calculate_distance_from_bbox(predicted_boxes, img_height, img_width, K, came
 \end{lstlisting}
 
 \subsection{Results}
-The predictions and ground truth were overlaid on test images for visual verification. IoU values were computed for each detection to assess bounding box quality. Horizontal distances were compared with the ground truth for validation. The following figure illustrates the results:
-\begin{figure}[H]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=0.8\textwidth]{output_image.png}
     \caption{Predicted bounding boxes (green) and ground truth (red) with calculated distances.}
@@ -236,5 +263,7 @@ The predictions and ground truth were overlaid on test images for visual verific
 
 \section{Conclusion}
 % Empty text field
+
+
 
 \end{document}
