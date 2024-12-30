@@ -221,7 +221,7 @@ for img in img_list:
             #z = np.dot(K, gt[i]['gt_distance'] * ray_direction)
             #z = z / z[2]
             #print(f"Pixel Coordinates: ({z[0]:.2f}, {z[1]:.2f}, {z[2]:.2f})")
-            r_x, r_y, r_z = ray_direction
+            #r_x, r_y, r_z = ray_direction
             #print(f"Ray Direction: [{r_x:.2f}, {r_y:.2f}, {r_z:.2f}]")
             # 4. Calculate Scaling Factor (t) for Ground Plane Intersection
             t = camera_height / r_y

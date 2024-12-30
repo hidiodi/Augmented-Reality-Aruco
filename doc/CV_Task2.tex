@@ -223,10 +223,10 @@ x_i2 = \min(x_2, x_{2g}), \quad y_i2 = \min(y_2, y_{2g})
 
 \section{Horizontal Distance Calculation}
 
-The function computes the horizontal distance from the camera to the point where the ray, originating from the lower center of a bounding box in the image, intersects with the ground plane. This process uses the camera’s intrinsic matrix, the height of the camera and the assumption the images are all on a flat plane. 
+The function computes the horizontal distance from the camera to the point where the ray, originating from the lower center of a bounding box in the image, intersects with the ground plane. This process uses the intrinsic matrix of the camera, the height of the camera, and the assumption that the images are all on a flat plane. 
 
 \subsection{Bounding Box Center (Bottom-Center)}
-The bounding box is represented by its corner coordinates: \((x_{\text{min}}, y_{\text{min}})\) for the top-left corner and \((x_{\text{max}}, y_{\text{max}})\) for the bottom-right corner. To find the center of the bounding box, we compute the average of the \(x\)-coordinates of the box corners:
+The bounding box is represented by its corner coordinates: \((x_{\text{min}}, y_{\text{min}})\) for the upper left corner and \((x_{\text{max}}, y_{\text{max}})\) for the lower right corner. To find the center of the bounding box, we compute the average of the \(x\)-coordinates of the box corners:
 
 \[
 x_{\text{center}} = \frac{x_{\text{min}} + x_{\text{max}}}{2}
@@ -250,7 +250,7 @@ K_{\text{inv}} = \text{np.linalg.inv}(K)
 The inverse matrix \(K_{\text{inv}}\) allows us to map the pixel coordinates to normalized camera coordinates.
 
 \subsection{Convert Pixel Coordinates to Camera Coordinates}
-Using the inverse intrinsic matrix, we can convert the pixel coordinates of the bounding box center to camera coordinates. The center's pixel coordinates \((x_{\text{center}}, y_{\text{center}})\) are used to form a direction vector, which points from the camera center toward the bounding box center:
+Using the inverse intrinsic matrix, we can convert the pixel coordinates of the bounding box center to camera coordinates. The center's pixel coordinates \((x_{\text{center}}, y_{\text{center}})\) are used to form a direction vector, which points from the camera center toward the center of the bounding box:
 
 \[
 \text{ray\_direction} = K_{\text{inv}} \cdot \begin{bmatrix} x_{\text{center}} \\ y_{\text{center}} \\ 1 \end{bmatrix}
@@ -259,7 +259,7 @@ Using the inverse intrinsic matrix, we can convert the pixel coordinates of the 
 We then normalize this direction vector to ensure it has a unit length:
 
 \[
-\text{ray\_direction} /= \|\text{ray\_direction}\|
+\text{ray\_direction} = \frac{\text{ray\_direction}}{\|\text{ray\_direction}\|}
 \]
 
 The components of the normalized ray direction are denoted as \(r_x\), \(r_y\), and \(r_z\):
@@ -293,7 +293,7 @@ The ray length, which is the distance from the camera to the intersection point,
 \]
 
 \subsection{Compute Horizontal Distance}
-Finally, the horizontal distance to the ground plane is computed by projecting the intersection point onto the ground. This is done by calculating the distance between the camera and the intersection point. The horizontal distance is given by:
+Finally, the horizontal distance from the ground plane is calculated by projecting the intersection point onto the ground. This is done by calculating the distance between the camera and the intersection point. The horizontal distance is given by:
 
 \begin{figure}[h!]
     \centering
@@ -323,7 +323,7 @@ Finally, the horizontal distance to the ground plane is computed by projecting t
 \[
 \text{horizontal\_distance} = \sqrt{\text{rayLength}^2 - \text{camera\_height}^2}
 \]
-This value represents the horizontal distance from the camera to the point where the ray intersects the ground.
+This value represents the horizontal distance from the camera to the point where the ray intersects the ground. Since this point is in the lower center of the bounding box, it represents the distance on the plane from the camera to the car.
 
 \section{Summary}
 The function uses a series of geometric calculations to determine the horizontal distance from the camera to an object in the image, based on the position of the bounding box. By converting pixel coordinates to camera coordinates and using the camera height, the function calculates the point of intersection with the ground plane, and finally, the horizontal distance is obtained. This process leverages the camera's intrinsic matrix and the known camera height to accurately calculate the distance in real-world coordinates.
