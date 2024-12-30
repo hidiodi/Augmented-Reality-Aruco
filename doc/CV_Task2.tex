@@ -185,41 +185,62 @@ To evaluate the quality of predictions, the Intersection over Union (IoU) metric
 \]
 where the overlap is the intersection of the predicted and ground truth bounding boxes.
 
-The Intersection over Union (IoU) metric is calculated as follows:
+\section{Intersection over Union (IoU) Calculation}
 
-\todo[inline]{Besseres Beispiel für IoU}
-Given two bounding boxes, \( \text{modelPredictionBox} = (x_1, y_1, x_2, y_2) \) and \( \text{expectedBox} = (x_{1g}, y_{1g}, x_{2g}, y_{2g}) \):
+\subsection{Function Description}
 
-1. Calculate the coordinates of the intersection rectangle:
+The function takes two bounding boxes as input, defined as:
 \[
-x_i1 = \max(x_1, x_{1g}), \quad y_i1 = \max(y_1, y_{1g})
+\text{groundTruthBox} = [x_1, y_1, x_2, y_2], \quad \text{predictedBox} = [x_{1g}, y_{1g}, x_{2g}, y_{2g}]
 \]
-\[
-x_i2 = \min(x_2, x_{2g}), \quad y_i2 = \min(y_2, y_{2g})
-\]
+where:
+\begin{itemize}
+    \item \((x_1, y_1)\) and \((x_2, y_2)\): Top-left and bottom-right coordinates of the first box.
+    \item \((x_{1g}, y_{1g})\) and \((x_{2g}, y_{2g})\): Top-left and bottom-right coordinates of the second box.
+\end{itemize}
 
-2. Calculate the area of the intersection rectangle:
-\[
-\text{inter\_area} = \max(0, x_i2 - x_i1) \times \max(0, y_i2 - y_i1)
-\]
+\subsection{Steps in IoU Calculation}
 
-3. Calculate the area of both bounding boxes:
-\[
-\text{box1\_area} = (x_2 - x_1) \times (y_2 - y_1)
-\]
-\[
-\text{box2\_area} = (x_{2g} - x_{1g}) \times (y_{2g} - y_{1g})
-\]
+\begin{enumerate}
+    \item \textbf{Intersection Box Calculation}: 
+    The intersection box is determined by finding the maximum of the top-left coordinates and the minimum of the bottom-right coordinates:
+    \[
+    x_i^1 = \max(x_1, x_{1g}), \quad y_i^1 = \max(y_1, y_{1g})
+    \]
+    \[
+    x_i^2 = \min(x_2, x_{2g}), \quad y_i^2 = \min(y_2, y_{2g})
+    \]
+    The area of the intersection box is then computed as:
+    \[
+    \text{inter\_area} = \max(0, x_i^2 - x_i^1) \cdot \max(0, y_i^2 - y_i^1)
+    \]
 
-4. Calculate the union area:
-\[
-\text{union\_area} = \text{box1\_area} + \text{box2\_area} - \text{inter\_area}
-\]
+    \item \textbf{Areas of the Individual Boxes}: 
+    The areas of the two bounding boxes are calculated as:
+    \[
+    \text{box1\_area} = (x_2 - x_1) \cdot (y_2 - y_1), 
+    \]\[
+    \text{box2\_area} = (x_{2g} - x_{1g}) \cdot (y_{2g} - y_{1g})
+    \]
 
-5. Finally, calculate the IoU:
-\[
-\text{IoU} = \frac{\text{inter\_area}}{\text{union\_area}}
-\]
+    \item \textbf{Union Area Calculation}:
+    The union area is computed as the sum of the individual box areas minus the intersection area:
+    \[
+    \text{union\_area} = \text{box1\_area} + \text{box2\_area} - \text{inter\_area}
+    \]
+
+    \item \textbf{IoU Calculation}:
+    Finally, the IoU is obtained by dividing the intersection area by the union area:
+    \[
+    \text{IoU} = \frac{\text{inter\_area}}{\text{union\_area}}
+    \]
+
+    \item \textbf{Matching}:
+    To match the predicted Bounding with the corresponding Groundtruth each prediction calculates the IoU with every Groundtruthbox and only keeps the best result with the largest overlaping area.
+
+\end{enumerate}
+
+
 
 \section{Horizontal Distance Calculation}
 
@@ -323,7 +344,7 @@ Finally, the horizontal distance from the ground plane is calculated by projecti
 \[
 \text{horizontal\_distance} = \sqrt{\text{rayLength}^2 - \text{camera\_height}^2}
 \]
-This value represents the horizontal distance from the camera to the point where the ray intersects the ground. Since this point is in the lower center of the bounding box, it represents the distance on the plane from the camera to the car.
+This value represents the horizontal distance from the camera to the point where the ray intersects the ground. Since this point is in the lower center of the bounding box, this is the distance from the camera to the car.
 
 \section{Summary}
 The function uses a series of geometric calculations to determine the horizontal distance from the camera to an object in the image, based on the position of the bounding box. By converting pixel coordinates to camera coordinates and using the camera height, the function calculates the point of intersection with the ground plane, and finally, the horizontal distance is obtained. This process leverages the camera's intrinsic matrix and the known camera height to accurately calculate the distance in real-world coordinates.
