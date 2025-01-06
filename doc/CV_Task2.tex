@@ -52,6 +52,7 @@ The content of this document was created by the authors mentioned above. ChatGPT
     \acro{KITTI}{Karlsruhe Institute of Technology and Toyota Technological Institute}
     \acro{YOLO}{You only look once}
     \acro{Bbox}{Bounding Box}
+    \acro{IoU}{Intersection over Union}
     \acro{CNN}{Convolutional Neural Networks}
 \end{acronym}
 
@@ -62,9 +63,10 @@ The content of this document was created by the authors mentioned above. ChatGPT
 \section{Setup}
 
 \subsection{Neuronal Network}
-YOLO (You Only Look Once) is an object detection system that was first released in 2016 \cite{redmon2016you}. It is required for this project. The YOLOv11 model was used for object detection in the KITTI dataset.
 
-\todo[inline]{Erklären kurz wieso wir YOLOv11 nutzen und das YOLO ein CNN ist}
+YOLO (You Only Look Once) is a Convolutional Neural Network (CNN) that processes images through a single pass, making it efficient for detecting multiple objects simultaneously in an image.
+YOLOv11 was chosen for its fast and accurate object detection capabilities.
+
 
 \subsection{Preprocessing}
 
@@ -106,23 +108,27 @@ In contrast, the \ac{YOLO} format specifies each bounding box as:
     \item \texttt{width, height}: Normalized dimensions of the bounding box.
 \end{itemize}
 
-\ac{KITTI} does not support the class identifier, so we omitted this field in the conversion. Therefore, car is identified as 1.
-To convert the bounding box coordinates, we used the following formulas:
+\ac{KITTI} does not support the class identifier, so we omitted this field in the conversion. Therefore, car is identified as 0.
+To convert the bounding box coordinates, we use the following formulas:
 
 \[
-\texttt{img\_width} = x_{max} - x_{min},\quad
-\texttt{img\_height} = y_{max} - y_{min}
-\]
-\[
-x\_center = \frac{x_{min} + x_{max}}{2 \cdot \texttt{img\_width}},\quad
-y\_center = \frac{y_{min} + y_{max}}{2 \cdot \texttt{img\_height}}
-\]
-\[
-width = \frac{x_{max} - x_{min}}{\texttt{img\_width}},\quad
-height = \frac{y_{max} - y_{min}}{\texttt{img\_height}}
+\text{img\_width} = x_{\text{max}} - x_{\text{min}}, \quad
+\text{img\_height} = y_{\text{max}} - y_{\text{min}}
 \]
 
-The resulting \ac{Bbox} in \ac{YOLO} format is shown in Figure \ref{fig:bounding_box_example}.
+\[
+x_{\text{center}} = \frac{x_{\text{min}} + x_{\text{max}}}{2 \cdot \text{img\_width}}, \quad
+y_{\text{center}} = \frac{y_{\text{min}} + y_{\text{max}}}{2 \cdot \text{img\_height}}
+\]
+
+\[
+\text{width} = \frac{x_{\text{max}} - x_{\text{min}}}{\text{img\_width}}, \quad
+\text{height} = \frac{y_{\text{max}} - y_{\text{min}}}{\text{img\_height}}
+\]
+
+The resulting bounding box in YOLO format is shown in Figure \ref{fig:bounding_box_example}.
+
+
 
 \begin{figure}[H]
     \centering
@@ -141,13 +147,14 @@ The resulting \ac{Bbox} in \ac{YOLO} format is shown in Figure \ref{fig:bounding
 \end{figure}
 
 \subsubsection{Image Resizing}
-To standardize input dimensions for the object detector, all images were resized to \( 1248 \times 512 \) pixels using OpenCV. The resized images were stored in the \texttt{images/} subdirectory of the output path.
-\todo[inline]{Erklären, warum wir diese Auflösung verwenden: Die Auflösung \( 1248 \times 512 \) Pixel wurde gewählt, um ein Gleichgewicht zwischen Recheneffizienz und ausreichenden Details für eine genaue Objekterkennung zu gewährleisten. Diese Auflösung ist auch mit den Eingabeanforderungen des YOLOv11-Modells kompatibel, was eine optimale Leistung während des Trainings und der Inferenz sicherstellt.}
+To standardize the input dimensions for the object detector, all images were resized to \( 1248 \times 512 \) pixels using OpenCV.
+While the original images are \( 1242 \times 375 \), resizing to \( 1248 \times 512 \) ensures compatibility with YOLOv11’s input requirements, without significant loss of detail or increase in computational cost.
+
 
 \section{Training}
 
 \subsection{Training Configuration}
-We split the dataset into 80\% for training and 20\% for validation, resulting in 16 images for training and 4 images for validation. This 80:20 split is a common practice in training \ac{CNN} as it provides a good balance between having enough data to train the model and enough data to validate its performance. \\
+We split the dataset into 80\% for training and 20\% for validation, resulting in 16 images for training and 4 images for validation. This 80:20 split is a common practice in training \ac{CNN} \cite{80/20 Split} as it provides a good balance between having enough data to train the model and enough data to validate its performance. \\
 
 The training configuration included the following key hyperparameters: The model was trained for 100 epochs. An epoch refers to one complete pass through the entire training dataset. Training for multiple epochs helps the model to learn and generalize better. A batch size of 32 was used. This means that 32 samples from the training dataset were processed before the model's internal parameters were updated. A larger batch size can lead to more stable gradient updates. Data augmentation was enabled (set to True). Data augmentation involves applying random transformations to the training data, such as rotations, translations, and flips, to artificially increase the diversity of the training dataset and improve the model's robustness.
 
@@ -179,76 +186,171 @@ To evaluate the quality of predictions, the Intersection over Union (IoU) metric
 \]
 where the overlap is the intersection of the predicted and ground truth bounding boxes.
 
-The Intersection over Union (IoU) metric is calculated as follows:
+\section{\ac{IoU} Calculation}
 
-\todo[inline]{Besseres Beispiel für IoU}
-Given two bounding boxes, \( \text{modelPredictionBox} = (x_1, y_1, x_2, y_2) \) and \( \text{expectedBox} = (x_{1g}, y_{1g}, x_{2g}, y_{2g}) \):
+\subsection{Function Description}
 
-1. Calculate the coordinates of the intersection rectangle:
+The function takes two bounding boxes as input, defined as:
 \[
-x_i1 = \max(x_1, x_{1g}), \quad y_i1 = \max(y_1, y_{1g})
+\text{groundTruthBox} = [x_1, y_1, x_2, y_2], \quad \text{predictedBox} = [x_{1g}, y_{1g}, x_{2g}, y_{2g}]
 \]
-\[
-x_i2 = \min(x_2, x_{2g}), \quad y_i2 = \min(y_2, y_{2g})
-\]
+where:
+\begin{itemize}
+    \item \((x_1, y_1)\) and \((x_2, y_2)\): Top-left and bottom-right coordinates of the first box.
+    \item \((x_{1g}, y_{1g})\) and \((x_{2g}, y_{2g})\): Top-left and bottom-right coordinates of the second box.
+\end{itemize}
 
-2. Calculate the area of the intersection rectangle:
-\[
-\text{inter\_area} = \max(0, x_i2 - x_i1) \times \max(0, y_i2 - y_i1)
-\]
+\subsection{Steps in IoU Calculation}
 
-3. Calculate the area of both bounding boxes:
-\[
-\text{box1\_area} = (x_2 - x_1) \times (y_2 - y_1)
-\]
-\[
-\text{box2\_area} = (x_{2g} - x_{1g}) \times (y_{2g} - y_{1g})
-\]
-
-4. Calculate the union area:
-\[
-\text{union\_area} = \text{box1\_area} + \text{box2\_area} - \text{inter\_area}
-\]
-
-5. Finally, calculate the IoU:
-\[
-\text{IoU} = \frac{\text{inter\_area}}{\text{union\_area}}
-\]
-
-\section{Distance Estimation}
-\todo[inline]{Hilfe, was ist das?}
-Using the intrinsic matrix provided in the KITTI dataset, we estimated the horizontal distance to objects based on their bounding box coordinates. The procedure involves:
 \begin{enumerate}
-    \item Transforming pixel coordinates (bounding box center) to camera coordinates using the intrinsic matrix.
-    \item Projecting a ray from the camera through the pixel into the 3D environment.
-    \item Intersecting this ray with the ground plane to calculate the distance.
+    \item \textbf{Intersection Box Calculation}: 
+    The intersection box is determined by finding the maximum of the top-left coordinates and the minimum of the bottom-right coordinates:
+    \[
+    x_i^1 = \max(x_1, x_{1g}), \quad y_i^1 = \max(y_1, y_{1g})
+    \]
+    \[
+    x_i^2 = \min(x_2, x_{2g}), \quad y_i^2 = \min(y_2, y_{2g})
+    \]
+    The area of the intersection box is then computed as:
+    \[
+    \text{inter\_area} = \max(0, x_i^2 - x_i^1) \cdot \max(0, y_i^2 - y_i^1)
+    \]
+
+    \item \textbf{Areas of the Individual Boxes}: 
+    The areas of the two bounding boxes are calculated as:
+    \[
+    \text{box1\_area} = (x_2 - x_1) \cdot (y_2 - y_1), 
+    \]\[
+    \text{box2\_area} = (x_{2g} - x_{1g}) \cdot (y_{2g} - y_{1g})
+    \]
+
+    \item \textbf{Union Area Calculation}:
+    The union area is computed as the sum of the individual box areas minus the intersection area:
+    \[
+    \text{union\_area} = \text{box1\_area} + \text{box2\_area} - \text{inter\_area}
+    \]
+
+    \item \textbf{IoU Calculation}:
+    Finally, the IoU is obtained by dividing the intersection area by the union area:
+    \[
+    \text{IoU} = \frac{\text{inter\_area}}{\text{union\_area}}
+    \]
+
+    \item \textbf{Matching}:
+    To match the predicted Bounding with the corresponding Groundtruth each prediction calculates the IoU with every Groundtruthbox and only keeps the best result with the largest overlaping area.
+
 \end{enumerate}
 
-The calculation is described mathematically as follows:
+
+
+\section{Horizontal Distance Calculation}
+
+The function computes the horizontal distance from the camera to the point where the ray, originating from the lower center of a bounding box in the image, intersects with the ground plane. This process uses the intrinsic matrix of the camera, the height of the camera, and the assumption that the images are all on a flat plane. 
+
+\subsection{Bounding Box Center (Bottom-Center)}
+The bounding box is represented by its corner coordinates: \((x_{\text{min}}, y_{\text{min}})\) for the upper left corner and \((x_{\text{max}}, y_{\text{max}})\) for the lower right corner. To find the center of the bounding box, we compute the average of the \(x\)-coordinates of the box corners:
+
 \[
-\mathbf{L} = K^{-1} \cdot \mathbf{p}, \quad \mathbf{p} = [x, y, 1]^T
+x_{\text{center}} = \frac{x_{\text{min}} + x_{\text{max}}}{2}
+\]
+
+The \(y\)-coordinate is taken from the bottom of the box, so:
+
+\[
+y_{\text{center}} = y_{\text{max}}
+\]
+
+This step locates the center of the bounding box at the bottom-center position, which is used for further calculations.
+
+\subsection{Inverse of Intrinsic Matrix}
+The camera’s intrinsic matrix \(K\) relates pixel coordinates in the image to the camera's coordinate system. To convert pixel coordinates to camera coordinates, we need the inverse of the intrinsic matrix. This is computed as follows:
+
+\[
+K_{\text{inv}} = \text{np.linalg.inv}(K)
+\]
+
+The inverse matrix \(K_{\text{inv}}\) allows us to map the pixel coordinates to normalized camera coordinates.
+
+\subsection{Convert Pixel Coordinates to Camera Coordinates}
+Using the inverse intrinsic matrix, we can convert the pixel coordinates of the bounding box center to camera coordinates. The center's pixel coordinates \((x_{\text{center}}, y_{\text{center}})\) are used to form a direction vector, which points from the camera center toward the center of the bounding box:
+
+\[
+\text{ray\_direction} = K_{\text{inv}} \cdot \begin{bmatrix} x_{\text{center}} \\ y_{\text{center}} \\ 1 \end{bmatrix}
+\]
+
+We then normalize this direction vector to ensure it has a unit length:
+
+\[
+\text{ray\_direction} = \frac{\text{ray\_direction}}{\|\text{ray\_direction}\|}
+\]
+
+The components of the normalized ray direction are denoted as \(r_x\), \(r_y\), and \(r_z\):
+
+\[
+\mathbf{r} = \begin{bmatrix} r_x \\ r_y \\ r_z \end{bmatrix} = \text{ray\_direction}
+\]
+
+
+\subsection{Calculate Scaling Factor (t) for Ground Plane Intersection}
+To compute the intersection of the ray with the ground plane, we calculate a scaling factor \(t\), which scales the direction vector such that the ray intersects the ground. The scaling factor is calculated by dividing the camera height by the value of \(r_y\), the vertical component of the direction vector:
+\[
+0 = t\cdot{r_y} - \text{camera\_height}
 \]
 \[
-t = \frac{\text{camera height}}{-\text{ray direction}_y}, \quad \text{intersection} = t \cdot \mathbf{L}
+t = \frac{\text{camera\_height}}{r_y}
 \]
-The Python implementation is shown below:
-\begin{lstlisting}[language=Python, caption=Distance calculation, label=lst:distance]
-def calculate_distance_from_bbox(predicted_boxes, img_height, img_width, K, camera_height):
-    for box in predicted_boxes:
-        x_min, y_min, x_max, y_max = box
-        x_center = (x_min + x_max) / 2
-        y_center = y_max  # Bottom of the box
 
-        # Transform to camera coordinates
-        ray_direction = np.linalg.inv(K) @ np.array([x_center, y_center, 1])
-        ray_direction /= np.linalg.norm(ray_direction)
+\subsection{Compute Intersection Point in Camera Coordinates}
+Once the scaling factor \(t\) is determined, we can compute the intersection point in camera coordinates by scaling the direction vector:
 
-        # Scale to ground plane
-        t = camera_height / -ray_direction[1]
-        intersection = t * ray_direction
-        horizontal_distance = np.linalg.norm(intersection[:2])
-        print(f"Horizontal Distance: {horizontal_distance:.2f} meters")
-\end{lstlisting}
+\[
+\text{intersection\_camera} = t \cdot \text{ray\_direction}
+\]
+
+
+The ray length, which is the distance from the camera to the intersection point, is given by the magnitude of the intersection point:
+
+\[
+\text{rayLength} = \|\text{intersection\_camera}\|
+\]
+
+\subsection{Compute Horizontal Distance}
+Finally, the horizontal distance from the ground plane is calculated by projecting the intersection point onto the ground. This is done by calculating the distance between the camera and the intersection point. The horizontal distance is given by:
+
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}
+        % Camera height (a) line (vertical)
+        \draw[thick] (0, 0) -- (0, 2);
+        \node at (-1.3, 1) {camera\_height};
+
+        % Distance (b) line (horizontal)
+        \draw[thick] (0, 0) -- (2, 0);
+        \node at (1, -0.2) {distance};
+
+        % Hypotenuse (r * t) line (diagonal)
+        \draw[thick] (0, 2) -- (2, 0);
+        \node at (2, 1) {rayLength};
+
+        % Right angle mark
+        \draw[thick] (0, 0) rectangle (0.2, 0.2);
+
+        % Adding the right-angle symbol clearly
+        \node at (0.2, 0.2) [rotate=45] {.};
+
+    \end{tikzpicture}
+    \caption{Right Triangle Representation of the Pythagorean Theorem for Camera Height, Distance, and Ray}
+\end{figure}
+
+\[
+\text{horizontal\_distance} = \sqrt{\text{rayLength}^2 - \text{camera\_height}^2}
+\]
+This value represents the horizontal distance from the camera to the point where the ray intersects the ground. Since this point is in the lower center of the bounding box, this is the distance from the camera to the car.
+
+\section{Summary}
+The function uses a series of geometric calculations to determine the horizontal distance from the camera to an object in the image, based on the position of the bounding box. By converting pixel coordinates to camera coordinates and using the camera height, the function calculates the point of intersection with the ground plane, and finally, the horizontal distance is obtained. This process leverages the camera's intrinsic matrix and the known camera height to accurately calculate the distance in real-world coordinates.
+
+
 
 \subsection{Results}
 \begin{figure}[ht]
@@ -265,5 +367,14 @@ def calculate_distance_from_bbox(predicted_boxes, img_height, img_width, K, came
 % Empty text field
 
 
+\begin{thebibliography}{9}
+
+    \bibitem{80/20 Split}
+    Afshin Gholamy, Vladik Kreinovich, Olga Kosheleva. 
+    \textit{Why 70/30 or 80/20 Relation Between Training and Testing Sets:
+    A Pedagogical Explanation}. 
+    Technical Report: UTEP-CS-18-09.
+    
+\end{thebibliography}
 
 \end{document}
