@@ -2,5 +2,5 @@ names:
 - car
 - pedestrian
 nc: 2
-train: prepared_dataset\images
-val: prepared_dataset\images
+train: prepared_dataset/images
+val: val_images/images

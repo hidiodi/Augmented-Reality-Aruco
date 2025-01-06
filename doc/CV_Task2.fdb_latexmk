@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1735495797.80813 "/Users/jonasalber/Documents/GitHub/Augmented-Reality-Aruco/doc/CV_Task2.tex" "CV_Task2.pdf" "CV_Task2" 1735495798.59208 0
-  "/Users/jonasalber/Documents/GitHub/Augmented-Reality-Aruco/doc/CV_Task2.tex" 1735495796.68363 11292 d99c6407a3bc67635277a13f9874a69f ""
+["pdflatex"] 1735495830.19802 "/Users/jonasalber/Documents/GitHub/Augmented-Reality-Aruco/doc/CV_Task2.tex" "CV_Task2.pdf" "CV_Task2" 1735495831.08041 0
+  "/Users/jonasalber/Documents/GitHub/Augmented-Reality-Aruco/doc/CV_Task2.tex" 1735495812.72605 11292 d99c6407a3bc67635277a13f9874a69f ""
   "/opt/homebrew/Cellar/texlive/20240312_2/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1710106625 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/opt/homebrew/Cellar/texlive/20240312_2/share/texmf-dist/fonts/map/fontname/texfonts.map" 1710106625 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/opt/homebrew/Cellar/texlive/20240312_2/share/texmf-dist/fonts/map/pdftex/updmap/pdftex.map" 1710106625 5472554 f7861620179a71a79d4bd86251f559d0 ""
@@ -177,10 +177,10 @@
   "/opt/homebrew/Cellar/texlive/20240312_2/share/texmf-dist/tex/latex/xkeyval/xkeyval.sty" 1710106625 4937 4ce600ce9bd4ec84d0250eb6892fcf4f ""
   "/opt/homebrew/Cellar/texlive/20240312_2/share/texmf-dist/web2c/texmf.cnf" 1710106625 41652 e14926ab86fde7902cad99d9eeaa5ca5 ""
   "/opt/homebrew/Cellar/texlive/20240312_2/share/texmf-var/web2c/pdftex/pdflatex.fmt" 1710106625 8221849 5af4c39204c9d878b02f0380fcd41794 ""
-  "CV_Task2.aux" 1735495798.50714 5619 5550d3e8cdecd26b710e1550cac967f2 "pdflatex"
-  "CV_Task2.out" 1735495798.50878 1706 6bdd1111a34a877b9d4adc8499c5454b "pdflatex"
-  "CV_Task2.tex" 1735495796.68363 11292 d99c6407a3bc67635277a13f9874a69f ""
-  "output_image.png" 1735488318.55948 1036016 01dce3dfac69169b9578628280cd2787 ""
+  "CV_Task2.aux" 1735495830.98406 5619 5550d3e8cdecd26b710e1550cac967f2 "pdflatex"
+  "CV_Task2.out" 1735495830.98485 1706 6bdd1111a34a877b9d4adc8499c5454b "pdflatex"
+  "CV_Task2.tex" 1735495812.72605 11292 d99c6407a3bc67635277a13f9874a69f ""
+  "output_image.png" 1735495829.53294 1201693 3a7e12341528187416ec95ad061ddb4c ""
   (generated)
   "CV_Task2.aux"
   "CV_Task2.log"
