@@ -324,7 +324,13 @@ Finally, the horizontal distance from the ground plane is calculated by projecti
 This value represents the horizontal distance from the camera to the point where the ray intersects the ground. Since this point is in the lower center of the bounding box, this is the distance from the camera to the car.
 
 \section{Summary}
-The function uses a series of geometric calculations to determine the horizontal distance from the camera to an object in the image, based on the position of the bounding box. By converting pixel coordinates to camera coordinates and using the camera height, the function calculates the point of intersection with the ground plane, and finally, the horizontal distance is obtained. This process leverages the camera's intrinsic matrix and the known camera height to accurately calculate the distance in real-world coordinates.
+This project focuses on object detection and distance estimation using the YOLOv11 model on the KITTI dataset. Preprocessing included resizing images and converting KITTI-format annotations into YOLO-compatible bounding boxes to ensure compatibility with the model.
+
+The dataset was split 80:20 for training and validation. Key training parameters were 100 epochs, a batch size of 32, and data augmentation to improve robustness. Evaluation relied on the \ac{IoU} to measure prediction accuracy, with the approach effectively distinguishing true positives from false positives. The IoU-based detection precision performed well, indicating reliable localization of objects.
+
+Distance estimation calculated horizontal distances from the camera to objects by projecting bounding box centers to the ground plane using the camera's intrinsic matrix and height. While this method worked well for shorter distances, accuracy degraded significantly beyond 15 meters. This highlights a limitation in using single-image geometry for long-range depth estimation.
+
+Overall, the project successfully integrated object detection and distance estimation but showed the need for enhanced techniques, such as stereo vision or sensor fusion, to improve long-range performance.
 
 \begin{thebibliography}{9}
 
@@ -591,4 +597,6 @@ ID   Label: Confidence   IoU       Precision Recall    CalcDist       GtDist
 1    car: 0.81           0.96      1.00      1.00      50.60          19.70          
 
 \end{verbatim}
+\end{document}
+=======
 \end{document}
