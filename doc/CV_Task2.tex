@@ -357,7 +357,7 @@ This project focuses on object detection and distance estimation using the YOLOv
 
 The dataset was split 80:20 for training and validation. Key training parameters were 100 epochs, a batch size of 32, and data augmentation to improve robustness. Evaluation relied on the \ac{IoU} to measure prediction accuracy, with the approach effectively distinguishing true positives from false positives. The IoU-based detection precision performed well, indicating reliable localization of objects.
 
-Distance estimation calculated horizontal distances from the camera to objects by projecting bounding box centers to the ground plane using the camera's intrinsic matrix and height. While this method worked well for shorter distances, accuracy degraded significantly beyond 15 meters. This highlights a limitation in using single-image geometry for long-range depth estimation.
+Distance estimation calculated horizontal distances from the camera to objects by projecting bounding box centers to the ground plane using the camera's intrinsic matrix and height. While this method worked well for shorter distances, accuracy degraded significantly beyond 15 meters. This highlights either a limitation in using single-image geometry for long-range depth estimation. Or the implementation has an undiscovered bug which degraded the result massively.
 
 Overall, the project successfully integrated object detection and distance estimation but showed the need for enhanced techniques, such as stereo vision or sensor fusion, to improve long-range performance.
 
