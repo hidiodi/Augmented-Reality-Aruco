@@ -1,6 +1,6 @@
 # Fdb version 4
-["pdflatex"] 1736343851.52123 "/Users/jonasalber/Documents/GitHub/Augmented-Reality-Aruco/doc/CV_Task2.tex" "CV_Task2.pdf" "CV_Task2" 1736343852.35649 0
-  "/Users/jonasalber/Documents/GitHub/Augmented-Reality-Aruco/doc/CV_Task2.tex" 1736343850.18987 27656 11fc8c0ffbc252177c9b323155e4ff2e ""
+["pdflatex"] 1736344131.24647 "/Users/jonasalber/Documents/GitHub/Augmented-Reality-Aruco/doc/CV_Task2.tex" "CV_Task2.pdf" "CV_Task2" 1736344132.62641 0
+  "/Users/jonasalber/Documents/GitHub/Augmented-Reality-Aruco/doc/CV_Task2.tex" 1736344116.87633 28412 59372a3cee3ea6ecef811960e78da592 ""
   "/opt/homebrew/Cellar/texlive/20240312_2/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1710106625 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/opt/homebrew/Cellar/texlive/20240312_2/share/texmf-dist/fonts/map/fontname/texfonts.map" 1710106625 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/opt/homebrew/Cellar/texlive/20240312_2/share/texmf-dist/fonts/map/pdftex/updmap/pdftex.map" 1710106625 5472554 f7861620179a71a79d4bd86251f559d0 ""
@@ -174,9 +174,9 @@
   "/opt/homebrew/Cellar/texlive/20240312_2/share/texmf-dist/tex/latex/xkeyval/xkeyval.sty" 1710106625 4937 4ce600ce9bd4ec84d0250eb6892fcf4f ""
   "/opt/homebrew/Cellar/texlive/20240312_2/share/texmf-dist/web2c/texmf.cnf" 1710106625 41652 e14926ab86fde7902cad99d9eeaa5ca5 ""
   "/opt/homebrew/Cellar/texlive/20240312_2/share/texmf-var/web2c/pdftex/pdflatex.fmt" 1710106625 8221849 5af4c39204c9d878b02f0380fcd41794 ""
-  "CV_Task2.aux" 1736343852.26165 8406 c7203f3d9e44e0817b455d8a99cb3a61 "pdflatex"
-  "CV_Task2.out" 1736343852.26265 6048 4a251396ad312b3bcb7c54999b55cfab "pdflatex"
-  "CV_Task2.tex" 1736343850.18987 27656 11fc8c0ffbc252177c9b323155e4ff2e ""
+  "CV_Task2.aux" 1736344132.52998 8424 4a6edfa8cc57a5d40f229c10ab6a81a1 "pdflatex"
+  "CV_Task2.out" 1736344132.53098 6048 4a251396ad312b3bcb7c54999b55cfab "pdflatex"
+  "CV_Task2.tex" 1736344116.87633 28412 59372a3cee3ea6ecef811960e78da592 ""
   "Output/output_image006059.png" 1736342918.8083 1037506 1ebcb7f743ef7bac9bf26b43671850b5 ""
   "Output/output_image006067.png" 1736342918.50127 1093571 a45b4bed5d945b1b22c2d71a4e63799e ""
   "Output/output_image006097.png" 1736342917.6004 1219811 7c0955d32e77b39abee5286a77e3bef4 ""
