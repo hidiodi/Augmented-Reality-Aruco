@@ -323,6 +323,24 @@ Finally, the horizontal distance from the ground plane is calculated by projecti
 \]
 This value represents the horizontal distance from the camera to the point where the ray intersects the ground. Since this point is in the lower center of the bounding box, this is the distance from the camera to the car.
 
+\section{IoU and Distance Calculation on Images}
+\subsection{Setup of the images in the document}
+The formulas for IoU and Horizontal Distance Calculation defined in the previous chapters are now applied to the provided images. The results of the application are as follows. In Figure \ref{output image006374}, the result of applying the formulas to image 006374 is shown. The results of applying the formulas to the other images can be found in the Results section. Below each image, there is a table listing the detected objects with their ID from the image. The first column indicates the detected class and the model's confidence in the detection. Next, the IoU for each bounding box is provided, followed by the precision and recall of the model for the corresponding image. The last two columns show the calculated distance values using the formulas from Compute Horizontal Distance as CalcDist and the ground truth distance provided with the image annotations.
+\subsection{Output Image 006374}
+\begin{center}
+    \includegraphics[width=0.45\textwidth]{Output/output_image006374.png}
+    \label{output image006374}
+\end{center}
+\small
+\begin{verbatim}
+ID|Label:Confidence|IoU |Precision|Recall|CalcDist|GtDist
+==========================================================
+0 | car: 0.99       |0.95|1.00     |1.00  |53.53   |18.22 
+1 | car: 0.90       |0.97|1.00     |1.00  |37.84   |6.93  
+
+\end{verbatim}
+\normalsize
+\newpage
 \section{Summary}
 This project focuses on object detection and distance estimation using the YOLOv11 model on the KITTI dataset. Preprocessing included resizing images and converting KITTI-format annotations into YOLO-compatible bounding boxes to ensure compatibility with the model.
 
@@ -345,18 +363,6 @@ Overall, the project successfully integrated object detection and distance estim
 \appendix
 \onecolumn
 \section{Results}
-\subsection{output image006374}
-\begin{center}
-    \includegraphics[width=0.8\textwidth]{Output/output_image006374.png}
-    \label{output image006374}
-\end{center}
-\begin{verbatim}
-ID   Label: Confidence   IoU       Precision Recall    CalcDist       GtDist         
-=====================================================================================
-0    car: 0.99           0.95      1.00      1.00      53.53          18.22          
-1    car: 0.90           0.97      1.00      1.00      37.84          6.93           
-
-\end{verbatim}
 
 \subsection{output image006206}
 \begin{center}
