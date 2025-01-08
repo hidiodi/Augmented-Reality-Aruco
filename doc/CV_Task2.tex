@@ -161,9 +161,20 @@ We split the dataset into 80\% for training and 20\% for validation, the splitti
 The training configuration included the following key hyperparameters: The model was trained for 100 epochs. An epoch refers to one complete pass through the entire training dataset. Training for multiple epochs helps the model to learn and generalize better. A batch size of 32 was used. This means that 32 samples from the training dataset were processed before the model's internal parameters were updated. A larger batch size can lead to more stable gradient updates. Data augmentation was enabled (set to True). Data augmentation involves applying random transformations to the training data, such as rotations, translations, and flips, to artificially increase the diversity of the training dataset and improve the model's robustness.
 
 
-\todo[inline]{Hier noch die ergebnisse des Trainings einfügen}
+\subsection{Training Process}
+The trained YOLOv11 model was evaluated on the validation set to measure detection accuracy. Predictions included bounding boxes, class labels, and confidence scores.\ac{IoU} was used to assess overlap between predicted and ground-truth boxes.
 
-\section{\ac{IoU} Evaluation of the trained model}
+A precision-confidence curve \ref{fig:Precision Confidence Curve} was generated to show how precision improves as low-confidence predictions are filtered out, providing insight into the model’s reliability. 
+The next sections present detailed metrics and results for a comprehensive performance analysis.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.5\textwidth]{P_curve.png}
+    \caption{Precision Confidence Curve from the trained Model from the model validation}
+    \label{fig:Precision Confidence Curve}
+\end{figure}
+
+\section{\ac{IoU} Calculation}
 
 \subsection{Function Description}
 The function takes two bounding boxes as input, defined as:
@@ -349,6 +360,13 @@ The dataset was split 80:20 for training and validation. Key training parameters
 Distance estimation calculated horizontal distances from the camera to objects by projecting bounding box centers to the ground plane using the camera's intrinsic matrix and height. While this method worked well for shorter distances, accuracy degraded significantly beyond 15 meters. This highlights a limitation in using single-image geometry for long-range depth estimation.
 
 Overall, the project successfully integrated object detection and distance estimation but showed the need for enhanced techniques, such as stereo vision or sensor fusion, to improve long-range performance.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Figure_2.png}
+    \caption{Distance comparison between calculated und Groundtruth}
+    \label{fig:Distance comparison}
+\end{figure}
 
 \begin{thebibliography}{9}
 
