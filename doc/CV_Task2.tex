@@ -179,7 +179,10 @@ The next sections present detailed metrics and results for a comprehensive perfo
 \subsection{Function Description}
 The function takes two bounding boxes as input, defined as:
 \[
-\text{groundTruthBox} = [x_1, y_1, x_2, y_2], \quad \text{predictedBox} = [x_{1g}, y_{1g}, x_{2g}, y_{2g}]
+\text{groundTruthBox} = [x_1, y_1, x_2, y_2], 
+\]
+\[
+\text{predictedBox} = [x_{1g}, y_{1g}, x_{2g}, y_{2g}]
 \]
 where:
 \begin{itemize}
@@ -333,7 +336,7 @@ Finally, the horizontal distance from the ground plane is calculated by projecti
 \text{horizontal\_distance} = \sqrt{\text{rayLength}^2 - \text{camera\_height}^2}
 \]
 This value represents the horizontal distance from the camera to the point where the ray intersects the ground. Since this point is in the lower center of the bounding box, this is the distance from the camera to the car.
-
+\newpage
 \section{IoU and Distance Calculation on Images}
 \subsection{Setup of the images in the document}
 The formulas for IoU and Horizontal Distance Calculation defined in the previous chapters are now applied to the provided images. The results of the application are as follows. In Figure \ref{output image006374}, the result of applying the formulas to image 006374 is shown. The results of applying the formulas to the other images can be found in the Results section. Below each image, there is a table listing the detected objects with their ID from the image. The first column indicates the detected class and the model's confidence in the detection. Next, the IoU for each bounding box is provided, followed by the precision and recall of the model for the corresponding image. The last two columns show the calculated distance values using the formulas from Compute Horizontal Distance as CalcDist and the ground truth distance provided with the image annotations.
@@ -363,7 +366,7 @@ Overall, the project successfully integrated object detection and distance estim
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.5\textwidth]{Figure_2.png}
+    \includegraphics[width=0.5\textwidth]{Horizontal_Distances_to_Objects.png}
     \caption{Distance comparison between calculated und Groundtruth}
     \label{fig:Distance comparison}
 \end{figure}

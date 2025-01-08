@@ -15,7 +15,7 @@ model = YOLO(model_path)
 
 image__folder_path = "datasets/prepared_dataset/images/"
 img_list = [datei for datei in os.listdir(image__folder_path) if datei.endswith('.png')]
-
+distances2 = []
 # Function to read the ground truth labels
 def read_ground_truth(file_path):
         ground_truth = []
@@ -51,7 +51,7 @@ def calculate_distance_from_bbox(predicted_boxes, img_height, img_width, K, came
     distances_bb = []
     distances = []
     for i, box in enumerate(predicted_boxes):
-        newCalcDist = calculate_distance_to_bbox(img_height,box, camera_height)
+        #newCalcDist = calculate_distance_to_bbox(img_height,box, camera_height)
         # 1. Bounding Box Center (Bottom-Center)
         x_min, y_min, x_max, y_max = box
         x_center = (x_min + x_max) / 2
@@ -74,8 +74,9 @@ def calculate_distance_from_bbox(predicted_boxes, img_height, img_width, K, came
         # 6. Compute Horizontal Distance
         horizontal_distance = np.sqrt(intersection_camera[0]**2 + intersection_camera[2]**2)
         print(f"Horizontal Distance to the Object: {horizontal_distance:.2f} meters compared to {gt[i]['gt_distance']} meters")
-        #distances_bb = horizontal_distance, (gt[i]['gt_distance'])
-        distances_bb = newCalcDist, (gt[i]['gt_distance'])
+        distances_bb = horizontal_distance, (gt[i]['gt_distance'])
+        #distances_bb = newCalcDist, (gt[i]['gt_distance'])
+        distances2.append(distances_bb)
         distances.append(distances_bb)
     return distances
 
@@ -263,34 +264,35 @@ for img in img_list:
     cv2.destroyAllWindows()
 
 
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
-# # Filter out empty lists and None values, then extract the calculated and ground truth distances
-# calculated_distances = [dist[0] for dist in distances if isinstance(dist, tuple) and len(dist) == 2]
-# ground_truth_distances = [dist[1] for dist in distances if isinstance(dist, tuple) and len(dist) == 2]
+# Filter out empty lists and None values, then extract the calculated and ground truth distances
+calculated_distances = [dist[0] for dist in distances2 if isinstance(dist, tuple) and len(dist) == 2]
+ground_truth_distances = [dist[1] for dist in distances2 if isinstance(dist, tuple) and len(dist) == 2]
 
-# # Create a scatter plot comparing calculated distances vs ground truth distances
-# plt.figure(figsize=(10, 6))
-# plt.scatter(calculated_distances, ground_truth_distances, color='b', marker='o', s=100, edgecolor='k')
+# Create a scatter plot comparing calculated distances vs ground truth distances
+plt.figure(figsize=(10, 6))
+plt.scatter(calculated_distances, ground_truth_distances, color='b', marker='o', s=100, edgecolor='k')
 
-# # Add a line y = x for orientation
-# # We need to create a line that spans the range of the data
-# max_value = max(max(calculated_distances), max(ground_truth_distances))  # Get max value for scaling the line
-# x_line = [0, max_value]
-# y_line = x_line  # Since it's y = x
+# Add a line y = x for orientation
+# We need to create a line that spans the range of the data
+max_value = max(max(calculated_distances), max(ground_truth_distances))  # Get max value for scaling the line
+x_line = [0, max_value]
+y_line = x_line  # Since it's y = x
 
-# plt.plot(x_line, y_line, color='b', linestyle='-', linewidth=2, label="y = x")  # Red dashed line for y = x
+plt.plot(x_line, y_line, color='b', linestyle='-', linewidth=2, label="y = x")  # Red dashed line for y = x
 
-# # Set labels and title
-# plt.xlabel("Distance calculated using camera information", fontsize=14)
-# plt.ylabel("Distance provided in ground truth", fontsize=14)
-# plt.title("Horizontal Distances to Objects", fontsize=14)
+# Set labels and title
+plt.xlabel("Distance calculated using camera information", fontsize=14)
+plt.ylabel("Distance provided in ground truth", fontsize=14)
+plt.title("Horizontal Distances to Objects", fontsize=14)
 
-# # Add gridlines for readability
-# plt.grid(True, linestyle='--', alpha=0.7)
+# Add gridlines for readability
+plt.grid(True, linestyle='--', alpha=0.7)
 
-# # Show legend for the line
-# plt.legend()
+# Show legend for the line
+plt.legend()
 
-# # Show the plot
-# plt.show()
+# Show the plot
+#plt.show()
+plt.savefig("doc/Output/Horizontal_Distances_to_Objects.png")
