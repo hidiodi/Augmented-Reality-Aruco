@@ -57,14 +57,16 @@ The content of this document was created by the authors mentioned above. ChatGPT
 \end{acronym}
 
 
-\section{Introduction}
-% Empty text field
+\section{Task definition}
+This work was created as part of the Computer Vision course at \ac{RWU} as a project assignment. The aim of the project is to use the \ac{YOLO} model for detection cars inside provided images. Additionally the distance from the camera to the car is calculated. The images are provided by the \ac{KITTI} dataset. The project is divided into two main tasks:
+\\
+This image augmentation is applied to a given data set, whereby the results achieved are then to be transferred to self-created images.
 
 \section{Setup}
 
 \subsection{Neuronal Network}
 
-YOLO (You Only Look Once) is a Convolutional Neural Network (CNN) that processes images through a single pass, making it efficient for detecting multiple objects simultaneously in an image.
+\ac{YOLO} is a Convolutional Neural Network (CNN) that processes images through a single pass, making it efficient for detecting multiple objects simultaneously in an image.
 YOLOv11 was chosen for its fast and accurate object detection capabilities.
 
 
@@ -154,42 +156,16 @@ While the original images are \( 1242 \times 375 \), resizing to \( 1248 \times 
 \section{Training}
 
 \subsection{Training Configuration}
-We split the dataset into 80\% for training and 20\% for validation, resulting in 16 images for training and 4 images for validation. This 80:20 split is a common practice in training \ac{CNN} \cite{80/20 Split} as it provides a good balance between having enough data to train the model and enough data to validate its performance. \\
+We split the dataset into 80\% for training and 20\% for validation, the splitting is done via random selection, resulting in 16 images for training and 4 images for validation. This 80:20 split is a common practice in training \ac{CNN} \cite{80/20 Split} as it provides a good balance between having enough data to train the model and enough data to validate its performance. \\
 
 The training configuration included the following key hyperparameters: The model was trained for 100 epochs. An epoch refers to one complete pass through the entire training dataset. Training for multiple epochs helps the model to learn and generalize better. A batch size of 32 was used. This means that 32 samples from the training dataset were processed before the model's internal parameters were updated. A larger batch size can lead to more stable gradient updates. Data augmentation was enabled (set to True). Data augmentation involves applying random transformations to the training data, such as rotations, translations, and flips, to artificially increase the diversity of the training dataset and improve the model's robustness.
 
-\subsection{Training Process}
-\todo[inline]{Erklären die ergebnisse unseres Trainings mit Bildern und Werten.}
 
-\section{Training Evaluation}
-Using the trained YOLOv11 model, predictions were generated for test images. The model outputs bounding boxes, confidence scores, and class labels for each detected object. The process is implemented as follows:
+\todo[inline]{Hier noch die ergebnisse des Trainings einfügen}
 
-\begin{lstlisting}[language=Python, caption=Generating predictions using YOLOv11, label=lst:prediction]
-# Load the trained YOLOv11 model
-load_model(model_path)
-
-# Predict on a sample image
-results = model.predict(image_path)
-
-# Process the prediction results
-for each result in results:
-    extract bounding box coordinates
-    extract confidence scores
-    extract class labels
-    calculate IoU
-\end{lstlisting}
-
-\todo[inline]{Was bringt der Code überhaupt in der Count Doku?}
-To evaluate the quality of predictions, the Intersection over Union (IoU) metric was calculated for each detected bounding box. The IoU is defined as:
-\[
-\text{IoU} = \frac{\text{Area of Overlap}}{\text{Area of Union}}
-\]
-where the overlap is the intersection of the predicted and ground truth bounding boxes.
-
-\section{\ac{IoU} Calculation}
+\section{\ac{IoU} Evaluation of the trained model}
 
 \subsection{Function Description}
-
 The function takes two bounding boxes as input, defined as:
 \[
 \text{groundTruthBox} = [x_1, y_1, x_2, y_2], \quad \text{predictedBox} = [x_{1g}, y_{1g}, x_{2g}, y_{2g}]
@@ -350,23 +326,6 @@ This value represents the horizontal distance from the camera to the point where
 \section{Summary}
 The function uses a series of geometric calculations to determine the horizontal distance from the camera to an object in the image, based on the position of the bounding box. By converting pixel coordinates to camera coordinates and using the camera height, the function calculates the point of intersection with the ground plane, and finally, the horizontal distance is obtained. This process leverages the camera's intrinsic matrix and the known camera height to accurately calculate the distance in real-world coordinates.
 
-
-
-\subsection{Results}
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=0.8\textwidth]{output_image.png}
-    \caption{Predicted bounding boxes (green) and ground truth (red) with calculated distances.}
-    \label{fig:predictions}
-\end{figure}
-
-\section{Discussion}
-% Empty text field
-
-\section{Conclusion}
-% Empty text field
-
-
 \begin{thebibliography}{9}
 
     \bibitem{80/20 Split}
@@ -377,4 +336,259 @@ The function uses a series of geometric calculations to determine the horizontal
     
 \end{thebibliography}
 
+\appendix
+\onecolumn
+\section{Results}
+\subsection{output image006374}
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{Output/output_image006374.png}
+    \label{output image006374}
+\end{center}
+\begin{verbatim}
+ID   Label: Confidence   IoU       Precision Recall    CalcDist       GtDist         
+=====================================================================================
+0    car: 0.99           0.95      1.00      1.00      53.53          18.22          
+1    car: 0.90           0.97      1.00      1.00      37.84          6.93           
+
+\end{verbatim}
+
+\subsection{output image006206}
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{Output/output_image006206.png}
+    \label{output image006206}
+\end{center}
+\begin{verbatim}
+ID   Label: Confidence   IoU       Precision Recall    CalcDist       GtDist         
+=====================================================================================
+0    car: 0.43           0.97      1.00      1.00      63.16          44.10          
+
+\end{verbatim}
+
+\subsection{output image006211}
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{Output/output_image006211.png}
+    \label{output image006211}
+\end{center}
+\begin{verbatim}
+ID   Label: Confidence   IoU       Precision Recall    CalcDist       GtDist         
+=====================================================================================
+0    car: 0.95           0.95      1.00      1.00      45.61          21.28          
+1    car: 0.94           0.97      1.00      1.00      34.29          4.61           
+2    car: 0.94           0.95      1.00      1.00      56.28          9.42           
+3    car: 0.93           0.96      1.00      1.00      63.62          12.35          
+4    car: 0.93           0.95      1.00      1.00      56.64          22.52          
+5    car: 0.93           0.97      1.00      1.00      57.76          25.35          
+6    car: 0.90           0.94      1.00      1.00      41.81          33.02          
+7    car: 0.89           0.97      1.00      1.00      34.29          32.10          
+8    car: 0.89           0.95      1.00      1.00      61.83          43.07          
+9    car: 0.83           0.91      1.00      1.00      55.92          5.77           
+10   car: 0.77           0.91      1.00      1.00      57.19          23.39          
+11   car: 0.75           0.93      1.00      1.00      60.97          27.16          
+12   car: 0.38           0.90      1.00      1.00      61.39          33.41          
+
+\end{verbatim}
+
+\subsection{output image006329}
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{Output/output_image006329.png}
+    \label{output image006329}
+\end{center}
+\begin{verbatim}
+ID   Label: Confidence   IoU       Precision Recall    CalcDist       GtDist         
+=====================================================================================
+0    car: 0.91           0.98      1.00      1.00      34.29          9.39           
+1    car: 0.88           0.98      1.00      1.00      43.25          4.11           
+2    car: 0.86           0.94      1.00      1.00      38.25          8.90           
+
+\end{verbatim}
+
+\subsection{output image006315}
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{Output/output_image006315.png}
+    \label{output image006315}
+\end{center}
+\begin{verbatim}
+ID   Label: Confidence   IoU       Precision Recall    CalcDist       GtDist         
+=====================================================================================
+0    car: 0.97           0.97      1.00      1.00      51.49          16.30          
+1    car: 0.39           1.00      1.00      1.00      65.27          53.73          
+
+\end{verbatim}
+
+\subsection{output image006310}
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{Output/output_image006310.png}
+    \label{output image006310}
+\end{center}
+\begin{verbatim}
+ID   Label: Confidence   IoU       Precision Recall    CalcDist       GtDist         
+=====================================================================================
+0    car: 0.96           0.97      1.00      1.00      46.58          27.48          
+1    car: 0.95           0.95      1.00      1.00      59.93          25.79          
+2    car: 0.94           0.95      1.00      1.00      55.39          18.92          
+3    car: 0.92           0.99      1.00      1.00      58.34          15.99          
+4    car: 0.87           1.00      1.00      1.00      72.86          18.58          
+5    car: 0.75           0.94      1.00      1.00      49.46          38.61          
+6    car: 0.71           0.88      1.00      1.00      66.26          67.33          
+
+\end{verbatim}
+
+\subsection{output image006098}
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{Output/output_image006098.png}
+    \label{output image006098}
+\end{center}
+\begin{verbatim}
+ID   Label: Confidence   IoU       Precision Recall    CalcDist       GtDist         
+=====================================================================================
+0    car: 0.95           0.95      1.00      1.00      63.62          12.53          
+1    car: 0.94           0.96      1.00      1.00      55.22          17.84          
+2    car: 0.91           0.95      1.00      1.00      47.97          34.35          
+3    car: 0.82           0.95      1.00      1.00      63.85          34.72          
+
+\end{verbatim}
+
+\subsection{output image006067}
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{Output/output_image006067.png}
+    \label{output image006067}
+\end{center}
+\begin{verbatim}
+ID   Label: Confidence   IoU       Precision Recall    CalcDist       GtDist         
+=====================================================================================
+0    car: 0.91           0.91      1.00      1.00      66.01          24.56          
+1    car: 0.90           0.95      1.00      1.00      57.19          44.21          
+2    car: 0.90           0.97      1.00      1.00      60.55          33.90          
+3    car: 0.83           0.91      1.00      1.00      64.79          23.64          
+4    car: 0.54           0.95      1.00      1.00      52.89          47.77          
+
+\end{verbatim}
+
+\subsection{output image006059}
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{Output/output_image006059.png}
+    \label{output image006059}
+\end{center}
+\begin{verbatim}
+ID   Label: Confidence   IoU       Precision Recall    CalcDist       GtDist         
+=====================================================================================
+0    car: 0.91           0.98      1.00      1.00      62.05          30.90          
+1    car: 0.90           1.00      1.00      1.00      64.79          50.60          
+2    car: 0.90           0.91      1.00      1.00      60.76          51.56          
+3    car: 0.70           0.95      1.00      1.00      60.34          67.68          
+4    car: 0.61           0.85      1.00      1.00      65.52          69.87          
+5    car: 0.54           0.84      1.00      1.00      66.76          31.96          
+
+\end{verbatim}
+
+\subsection{output image006312}
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{Output/output_image006312.png}
+    \label{output image006312}
+\end{center}
+\begin{verbatim}
+ID   Label: Confidence   IoU       Precision Recall    CalcDist       GtDist         
+=====================================================================================
+0    car: 0.96           0.93      1.00      1.00      51.49          31.22          
+1    car: 0.95           0.97      1.00      1.00      56.28          11.90          
+2    car: 0.94           0.96      1.00      1.00      43.57          10.14          
+3    car: 0.94           0.96      1.00      1.00      42.83          17.89          
+4    car: 0.92           0.92      1.00      1.00      47.71          22.10          
+5    car: 0.91           0.95      1.00      1.00      53.86          36.33          
+6    car: 0.87           1.00      1.00      1.00      60.34          16.12          
+7    car: 0.74           0.98      1.00      1.00      61.61          21.55          
+
+\end{verbatim}
+
+\subsection{output image006121}
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{Output/output_image006121.png}
+    \label{output image006121}
+\end{center}
+\begin{verbatim}
+ID   Label: Confidence   IoU       Precision Recall    CalcDist       GtDist         
+=====================================================================================
+
+\end{verbatim}
+
+\subsection{output image006097}
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{Output/output_image006097.png}
+    \label{output image006097}
+\end{center}
+\begin{verbatim}
+ID   Label: Confidence   IoU       Precision Recall    CalcDist       GtDist         
+=====================================================================================
+0    car: 0.98           0.99      1.00      1.00      55.39          25.11          
+1    car: 0.97           0.92      1.00      1.00      52.10          20.21          
+2    car: 0.96           0.93      1.00      1.00      56.82          16.90          
+3    car: 0.95           0.94      1.00      1.00      35.05          10.08          
+4    car: 0.92           0.97      1.00      1.00      41.61          7.94           
+5    car: 0.85           0.96      1.00      1.00      34.36          2.62           
+
+\end{verbatim}
+
+\subsection{output image006130}
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{Output/output_image006130.png}
+    \label{output image006130}
+\end{center}
+\begin{verbatim}
+ID   Label: Confidence   IoU       Precision Recall    CalcDist       GtDist         
+=====================================================================================
+
+\end{verbatim}
+
+\subsection{output image006291}
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{Output/output_image006291.png}
+    \label{output image006291}
+\end{center}
+\begin{verbatim}
+ID   Label: Confidence   IoU       Precision Recall    CalcDist       GtDist         
+=====================================================================================
+0    car: 0.97           0.94      1.00      1.00      54.36          26.52          
+1    car: 0.96           0.97      1.00      1.00      52.41          1.80           
+2    car: 0.95           0.97      1.00      1.00      56.82          8.43           
+3    car: 0.94           0.93      1.00      1.00      34.84          18.23          
+4    car: 0.94           0.97      1.00      1.00      44.68          21.23          
+5    car: 0.93           0.94      1.00      1.00      34.36          27.50          
+6    car: 0.93           0.92      1.00      1.00      58.73          30.79          
+7    car: 0.90           0.92      1.00      1.00      50.75          10.77          
+8    car: 0.90           0.96      1.00      1.00      58.34          15.32          
+9    car: 0.88           0.96      1.00      1.00      54.70          19.81          
+10   car: 0.75           0.93      1.00      1.00      59.52          31.32          
+11   car: 0.50           0.88      1.00      1.00      60.76          35.97          
+
+\end{verbatim}
+
+\subsection{output image006253}
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{Output/output_image006253.png}
+    \label{output image006253}
+\end{center}
+\begin{verbatim}
+ID   Label: Confidence   IoU       Precision Recall    CalcDist       GtDist         
+=====================================================================================
+0    car: 0.97           0.95      1.00      1.00      42.11          26.09          
+1    car: 0.93           0.97      1.00      1.00      53.70          34.38          
+2    car: 0.90           0.95      1.00      1.00      62.49          8.91           
+3    car: 0.79           0.90      1.00      1.00      57.95          17.29          
+4    car: 0.59           0.84      1.00      1.00      63.62          33.79          
+5    car: 0.58           0.95      1.00      1.00      62.27          39.23          
+
+\end{verbatim}
+
+\subsection{output image006227}
+\begin{center}
+    \includegraphics[width=0.8\textwidth]{Output/output_image006227.png}
+    \label{output image006227}
+\end{center}
+\begin{verbatim}
+ID   Label: Confidence   IoU       Precision Recall    CalcDist       GtDist         
+=====================================================================================
+0    car: 0.93           0.96      1.00      1.00      47.71          12.67          
+1    car: 0.81           0.96      1.00      1.00      50.60          19.70          
+
+\end{verbatim}
 \end{document}
